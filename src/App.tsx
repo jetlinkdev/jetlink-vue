@@ -142,9 +142,28 @@ function AppContent() {
       case 'order_state_sync':
         console.log('Order state synced from server:', data.data);
         // Server tells us what state to show (multi-tab sync)
-        const { order_id, ui_state } = data.data as any;
+        const { order_id, ui_state, pickup, destination, ...orderData } = data.data as any;
+        
+        // Update state
         setCurrentOrderId(order_id.toString());
         setOrderState(ui_state as OrderState);
+        
+        // Restore order data from server
+        if (pickup) {
+          setPickupLocation(
+            { lat: orderData.pickup_latitude, lon: orderData.pickup_longitude },
+            pickup
+          );
+        }
+        if (destination) {
+          setDestinationLocation(
+            { lat: orderData.destination_latitude, lon: orderData.destination_longitude },
+            destination
+          );
+        }
+        // Note: Can't restore notes, payment, time as they're not in context
+        // These would need to be added to OrderContext if needed
+        
         // Mark that we received order sync
         setHasReceivedOrderSync(true);
         // Stop syncing - we have the state
