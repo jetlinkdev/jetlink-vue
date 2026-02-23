@@ -328,14 +328,6 @@ function AppContent() {
 
   return (
     <>
-      {/* Show Login Dialog only if user is NOT logged in (after checking auth state) */}
-      {isLoggedIn === false && <LoginDialog onLoginSuccess={handleLoginSuccess} />}
-
-      {/* Show Profile Completion Dialog if user needs to complete profile */}
-      {isLoggedIn === true && needsProfile && (
-        <ProfileCompletionDialog onComplete={handleCompleteProfile} />
-      )}
-
       {/* Show loading overlay while checking auth state */}
       {isLoggedIn === null && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[4000]">
@@ -348,12 +340,23 @@ function AppContent() {
         </div>
       )}
 
-      <Map
-        center={mapCenter}
-        zoom={mapZoom}
-        onMapClick={handleMapClick}
-        onRouteDrawn={handleRouteDrawn}
-      />
+      {/* Show Login Dialog only if user is confirmed NOT logged in */}
+      {isLoggedIn === false && <LoginDialog onLoginSuccess={handleLoginSuccess} />}
+
+      {/* Show Profile Completion Dialog if user needs to complete profile */}
+      {isLoggedIn === true && needsProfile && (
+        <ProfileCompletionDialog onComplete={handleCompleteProfile} />
+      )}
+
+      {/* Show main app when logged in and profile is complete (or not needed) */}
+      {isLoggedIn === true && !needsProfile && (
+        <>
+          <Map
+            center={mapCenter}
+            zoom={mapZoom}
+            onMapClick={handleMapClick}
+            onRouteDrawn={handleRouteDrawn}
+          />
 
       <div className="order-panel absolute top-5 right-5 w-[380px] max-h-[calc(100vh-40px)] bg-white rounded-2xl shadow-xl z-[1000] overflow-y-auto custom-scrollbar">
         {orderState === 'booking' && (
@@ -428,6 +431,8 @@ function AppContent() {
           type={toast.type}
           onClose={() => setToast(null)}
         />
+      )}
+        </>
       )}
     </>
   );
