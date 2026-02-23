@@ -425,23 +425,11 @@ export function BookingPanel({ onSubmit, isSubmitting, getCurrentLocation, isGet
         </div>
 
         {priceEstimate && (
-          <div className="price-estimate bg-gray-100 p-4 rounded-xl mb-5">
-            <div className="flex justify-between items-center mb-2">
-              <span className="text-sm text-gray-600">Base Fare</span>
-              <span className="text-lg font-semibold text-gray-900">
-                Rp {priceEstimate.baseFare.toLocaleString('id-ID')}
-              </span>
-            </div>
-            <div className="flex justify-between items-center mb-2">
+          <div className="distance-info bg-gray-100 p-4 rounded-xl mb-5">
+            <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600">Distance</span>
               <span className="text-lg font-semibold text-gray-900">
                 {priceEstimate.distance.toFixed(2)} km
-              </span>
-            </div>
-            <div className="flex justify-between items-center pt-3 mt-3 border-t-2 border-gray-300">
-              <span className="text-sm text-gray-600">Total</span>
-              <span className="text-2xl font-bold text-primary">
-                Rp {priceEstimate.totalPrice.toLocaleString('id-ID')}
               </span>
             </div>
           </div>
