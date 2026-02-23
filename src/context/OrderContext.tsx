@@ -125,6 +125,12 @@ export function OrderProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const createOrderMessage = useCallback((): WebSocketMessage | null => {
+    // Require user to be authenticated
+    if (!user || !user.uid) {
+      console.error('User must be authenticated to create an order');
+      return null;
+    }
+
     if (!pickupLocation || !destinationLocation) {
       return null;
     }
@@ -139,7 +145,7 @@ export function OrderProvider({ children }: { children: ReactNode }) {
       notes,
       time: pickupTime ? Math.floor(new Date(pickupTime).getTime() / 1000) : null,
       payment: paymentMethod,
-      user_id: user ? `customer_${user.uid}` : `customer_${Date.now()}`,
+      user_id: `customer_${user.uid}`, // Use Firebase UID directly
     };
 
     return {
