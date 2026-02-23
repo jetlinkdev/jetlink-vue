@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { authService } from '../services/authService';
 
 interface LoginDialogProps {
@@ -8,6 +8,18 @@ interface LoginDialogProps {
 export function LoginDialog({ onLoginSuccess }: LoginDialogProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  // Listen to auth state changes
+  useEffect(() => {
+    const unsubscribe = authService.subscribeToAuthState((user) => {
+      if (user) {
+        setIsLoggedIn(true);
+        onLoginSuccess();
+      }
+    });
+    return () => unsubscribe();
+  }, [onLoginSuccess]);
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
@@ -15,18 +27,26 @@ export function LoginDialog({ onLoginSuccess }: LoginDialogProps) {
 
     try {
       const user = await authService.signInWithGoogle();
+      console.log('Login result:', user);
       if (user) {
-        onLoginSuccess();
+        // Auth state listener will handle the rest
+        console.log('Login successful, auth state listener will update isLoggedIn');
+        // Don't setIsLoading(false) here - let the auth state listener handle it
       } else {
         setError('Failed to sign in. Please try again.');
+        setIsLoading(false);
       }
     } catch (err) {
       setError('An error occurred during sign in. Please try again.');
       console.error('Login error:', err);
-    } finally {
       setIsLoading(false);
     }
   };
+
+  // Don't render if already logged in (prevents flash of dialog)
+  if (isLoggedIn) {
+    return null;
+  }
 
   return (
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[3000] animate-[fadeIn_0.3s_ease-out]">

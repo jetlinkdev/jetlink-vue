@@ -328,12 +328,24 @@ function AppContent() {
 
   return (
     <>
-      {/* Show Login Dialog only if user is NOT logged in */}
+      {/* Show Login Dialog only if user is NOT logged in (after checking auth state) */}
       {isLoggedIn === false && <LoginDialog onLoginSuccess={handleLoginSuccess} />}
 
       {/* Show Profile Completion Dialog if user needs to complete profile */}
-      {needsProfile && (
+      {isLoggedIn === true && needsProfile && (
         <ProfileCompletionDialog onComplete={handleCompleteProfile} />
+      )}
+
+      {/* Show loading overlay while checking auth state */}
+      {isLoggedIn === null && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[4000]">
+          <div className="bg-white rounded-2xl p-6 shadow-2xl">
+            <div className="flex flex-col items-center gap-4">
+              <div className="w-12 h-12 border-4 border-green-500 border-t-transparent rounded-full animate-spin"></div>
+              <p className="text-gray-600 font-medium">Loading...</p>
+            </div>
+          </div>
+        </div>
       )}
 
       <Map
