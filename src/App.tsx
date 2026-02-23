@@ -63,6 +63,7 @@ function AppContent() {
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'info' } | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null); // null = checking, false = not logged in, true = logged in
   const [needsProfile, setNeedsProfile] = useState(false);
+  const [isSyncingOrder, setIsSyncingOrder] = useState(true); // Track if waiting for server sync
 
   const { location: geoLocation, getCurrentLocation: getGeoLocation } = useGeolocation();
 
@@ -75,6 +76,8 @@ function AppContent() {
       if (!authUser) {
         setNeedsProfile(false);
       }
+      // Reset syncing state when auth state resolves
+      setIsSyncingOrder(false);
     });
 
     return () => unsubscribe();
@@ -127,6 +130,8 @@ function AppContent() {
         const { order_id, ui_state } = data.data as any;
         setCurrentOrderId(order_id.toString());
         setOrderState(ui_state as OrderState);
+        // Stop syncing - we have the state
+        setIsSyncingOrder(false);
         break;
 
       case 'existing_order_found':
@@ -272,6 +277,15 @@ function AppContent() {
   }, [createOrderMessage, sendMessage]);
 
   const handleCancelOrder = useCallback(() => {
+    // Prevent cancel while waiting for server sync
+    if (isSyncingOrder) {
+      setToast({
+        message: 'Please wait while loading your order...',
+        type: 'info',
+      });
+      return;
+    }
+    
     if (window.confirm('Are you sure you want to cancel this order?')) {
       setIsSubmitting(false);
       const message = cancelOrderMessage();
@@ -279,7 +293,7 @@ function AppContent() {
         sendMessage(message);
       }
     }
-  }, [cancelOrderMessage, sendMessage]);
+  }, [cancelOrderMessage, sendMessage, isSyncingOrder]);
 
   const handleAcceptBid = useCallback((bid: Bid) => {
     console.log('Accepting bid:', bid);
@@ -425,6 +439,7 @@ function AppContent() {
               onAcceptBid={handleAcceptBid}
               onDeclineBid={handleDeclineBid}
               onCancelOrder={handleCancelOrder}
+              isSyncing={isSyncingOrder}
             />
           </>
         )}

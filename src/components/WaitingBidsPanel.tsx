@@ -5,9 +5,10 @@ interface WaitingBidsPanelProps {
   onAcceptBid: (bid: Bid) => void;
   onDeclineBid: (bid: Bid) => void;
   onCancelOrder: () => void;
+  isSyncing?: boolean; // NEW: Track if waiting for server sync
 }
 
-export function WaitingBidsPanel({ onAcceptBid, onDeclineBid, onCancelOrder }: WaitingBidsPanelProps) {
+export function WaitingBidsPanel({ onAcceptBid, onDeclineBid, onCancelOrder, isSyncing = false }: WaitingBidsPanelProps) {
   const { pickupAddress, destinationAddress, priceEstimate, bids } = useOrder();
 
   return (
@@ -117,9 +118,10 @@ export function WaitingBidsPanel({ onAcceptBid, onDeclineBid, onCancelOrder }: W
       <button
         type="button"
         onClick={onCancelOrder}
-        className="w-full py-3 border-2 border-red-500 text-red-500 font-semibold rounded-xl hover:bg-red-50 transition-all duration-300"
+        disabled={isSyncing}
+        className="w-full py-3 border-2 border-red-500 text-red-500 font-semibold rounded-xl hover:bg-red-50 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        Cancel Order
+        {isSyncing ? 'Loading Order...' : 'Cancel Order'}
       </button>
     </div>
   );
