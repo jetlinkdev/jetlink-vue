@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useOrder } from '../context/OrderContext';
 import { Suggestion } from '../types';
 import { NOMINATIM_URL } from '../config/constants';
+import { RadioGroup } from '@headlessui/react';
 
 interface BookingPanelProps {
   onSubmit: () => void;
@@ -406,22 +407,58 @@ export function BookingPanel({ onSubmit, isSubmitting, getCurrentLocation, isGet
         </div>
 
         <div className="mb-5">
-          <label
-            htmlFor="paymentMethod"
-            className="block text-xs font-semibold text-gray-700 mb-2 uppercase tracking-wide"
-          >
+          <label className="block text-xs font-semibold text-gray-700 mb-2 uppercase tracking-wide">
             Payment Method
           </label>
-          <select
-            id="paymentMethod"
+          <RadioGroup
             value={paymentMethod}
-            onChange={(e) => setPaymentMethod(e.target.value as 'cash' | 'qris')}
-            required
-            className="w-full px-4 py-3 text-sm border-2 border-gray-300 rounded-xl focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all"
+            onChange={(value) => setPaymentMethod(value)}
+            className="grid grid-cols-2 gap-3"
           >
-            <option value="cash">Cash</option>
-            <option value="qris">QRIS</option>
-          </select>
+            <RadioGroup.Option value="cash">
+              {({ checked }) => (
+                <div
+                  className={`relative flex flex-col items-center p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                    checked
+                      ? 'border-primary bg-primary/5'
+                      : 'border-gray-300 hover:border-primary/50'
+                  }`}
+                >
+                  <div className="text-2xl mb-2">💵</div>
+                  <div className="text-sm font-semibold text-gray-700">Cash</div>
+                  {checked && (
+                    <div className="absolute top-2 right-2 w-5 h-5 bg-primary rounded-full flex items-center justify-center">
+                      <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                  )}
+                </div>
+              )}
+            </RadioGroup.Option>
+
+            <RadioGroup.Option value="qris">
+              {({ checked }) => (
+                <div
+                  className={`relative flex flex-col items-center p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                    checked
+                      ? 'border-primary bg-primary/5'
+                      : 'border-gray-300 hover:border-primary/50'
+                  }`}
+                >
+                  <div className="text-2xl mb-2">📱</div>
+                  <div className="text-sm font-semibold text-gray-700">QRIS</div>
+                  {checked && (
+                    <div className="absolute top-2 right-2 w-5 h-5 bg-primary rounded-full flex items-center justify-center">
+                      <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                  )}
+                </div>
+              )}
+            </RadioGroup.Option>
+          </RadioGroup>
         </div>
 
         {priceEstimate && (
