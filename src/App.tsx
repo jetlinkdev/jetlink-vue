@@ -10,7 +10,7 @@ import { ConnectionStatus as ConnectionStatusComponent } from './components/Conn
 import { MapLegend } from './components/MapLegend';
 import { LoginDialog } from './components/LoginDialog';
 import { ProfileCompletionDialog } from './components/ProfileCompletionDialog';
-import { Bid, WebSocketMessage } from './types';
+import { Bid, WebSocketMessage, OrderState } from './types';
 import { DEFAULT_LOCATION, MAP_CONFIG } from './config/constants';
 import { authService } from './services/authService';
 
@@ -118,19 +118,31 @@ function AppContent() {
     switch (data.intent) {
       case 'auth_success':
         console.log('Auth success:', data.data);
-        // User is authenticated and profile is complete
-        setNeedsProfile(false);
+        // Server will send order_state_sync if user has active order
         break;
 
-      case 'auth_profile_needed':
-        console.log('Profile needed:', data.data);
-        // User needs to complete profile
-        setNeedsProfile(true);
+      case 'order_state_sync':
+        console.log('Order state synced from server:', data.data);
+        // Server tells us what state to show (multi-tab sync)
+        const { order_id, ui_state } = data.data as any;
+        setCurrentOrderId(order_id.toString());
+        setOrderState(ui_state as OrderState);
+        break;
+
+      case 'existing_order_found':
+        console.log('Existing order found:', data.data);
+        // User tried to create order while one is active
+        const { order_id: existingOrderId, ui_state: existingUiState } = data.data as any;
+        setCurrentOrderId(existingOrderId.toString());
+        setOrderState(existingUiState as OrderState);
+        setToast({
+          message: 'You already have an active order',
+          type: 'info',
+        });
         break;
 
       case 'order_created':
-        console.log('Order created successfully:', data.data);
-        // Backend returns order ID as number
+        console.log('Order created:', data.data);
         const orderId = data.data as number;
         setCurrentOrderId(orderId.toString());
         setOrderState('waiting_bids');
