@@ -1,0 +1,460 @@
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { useOrder } from '../context/OrderContext';
+import { Suggestion } from '../types';
+import { NOMINATIM_URL } from '../config/constants';
+
+interface BookingPanelProps {
+  onSubmit: () => void;
+  isSubmitting: boolean;
+  getCurrentLocation: () => void;
+  isGettingLocation: boolean;
+}
+
+function debounce<T extends (...args: string[]) => Promise<void>>(func: T, wait: number): T {
+  let timeout: ReturnType<typeof setTimeout> | null = null;
+  return ((...args: Parameters<T>) => {
+    if (timeout) clearTimeout(timeout);
+    timeout = setTimeout(() => func(...args), wait);
+  }) as T;
+}
+
+export function BookingPanel({ onSubmit, isSubmitting, getCurrentLocation, isGettingLocation }: BookingPanelProps) {
+  const {
+    pickupAddress,
+    destinationAddress,
+    pickupTime,
+    notes,
+    paymentMethod,
+    priceEstimate,
+    pickupLocation,
+    destinationLocation,
+    setPickupTime,
+    setNotes,
+    setPaymentMethod,
+    getMinPickupTime,
+    getPickupTimeLabel,
+  } = useOrder();
+
+  const [pickupSuggestions, setPickupSuggestions] = useState<Suggestion[]>([]);
+  const [destinationSuggestions, setDestinationSuggestions] = useState<Suggestion[]>([]);
+  const [showPickupSuggestions, setShowPickupSuggestions] = useState(false);
+  const [showDestinationSuggestions, setShowDestinationSuggestions] = useState(false);
+  const [pickupInputValue, setPickupInputValue] = useState('');
+  const [destinationInputValue, setDestinationInputValue] = useState('');
+  const [showTimeInput, setShowTimeInput] = useState(false); // Control visibility of time input
+
+  const pickupInputRef = useRef<HTMLInputElement>(null);
+  const destinationInputRef = useRef<HTMLInputElement>(null);
+  const pickupSuggestionsRef = useRef<HTMLDivElement>(null);
+  const destinationSuggestionsRef = useRef<HTMLDivElement>(null);
+  const timeInputRef = useRef<HTMLInputElement>(null);
+
+  // Update input values when addresses change from map selection
+  useEffect(() => {
+    if (pickupAddress) {
+      setPickupInputValue(pickupAddress);
+    }
+  }, [pickupAddress]);
+
+  useEffect(() => {
+    if (destinationAddress) {
+      setDestinationInputValue(destinationAddress);
+    }
+  }, [destinationAddress]);
+
+  const geocodeAddress = useCallback(async (query: string): Promise<Suggestion[]> => {
+    try {
+      const response = await fetch(
+        `${NOMINATIM_URL}/search?format=json&q=${encodeURIComponent(query)}&limit=5&countrycodes=id`
+      );
+      return await response.json();
+    } catch (error) {
+      console.error('Geocoding error:', error);
+      return [];
+    }
+  }, []);
+
+  const handlePickupInput = useCallback(
+    debounce(async (query: string) => {
+      if (query.length < 3) {
+        setPickupSuggestions([]);
+        setShowPickupSuggestions(false);
+        return;
+      }
+
+      const results = await geocodeAddress(query);
+      setPickupSuggestions(results);
+      setShowPickupSuggestions(results.length > 0);
+    }, 500),
+    [geocodeAddress]
+  ) as (query: string) => void;
+
+  const handleDestinationInput = useCallback(
+    debounce(async (query: string) => {
+      if (query.length < 3) {
+        setDestinationSuggestions([]);
+        setShowDestinationSuggestions(false);
+        return;
+      }
+
+      const results = await geocodeAddress(query);
+      setDestinationSuggestions(results);
+      setShowDestinationSuggestions(results.length > 0);
+    }, 500),
+    [geocodeAddress]
+  ) as (query: string) => void;
+
+  // Close suggestions when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        pickupSuggestionsRef.current &&
+        !pickupSuggestionsRef.current.contains(event.target as Node) &&
+        pickupInputRef.current &&
+        !pickupInputRef.current.contains(event.target as Node)
+      ) {
+        setShowPickupSuggestions(false);
+      }
+      if (
+        destinationSuggestionsRef.current &&
+        !destinationSuggestionsRef.current.contains(event.target as Node) &&
+        destinationInputRef.current &&
+        !destinationInputRef.current.contains(event.target as Node)
+      ) {
+        setShowDestinationSuggestions(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handlePickupSelect = (suggestion: Suggestion) => {
+    setPickupInputValue(suggestion.display_name);
+    setShowPickupSuggestions(false);
+    // The actual location setting is handled by the parent via map click
+  };
+
+  const handleDestinationSelect = (suggestion: Suggestion) => {
+    setDestinationInputValue(suggestion.display_name);
+    setShowDestinationSuggestions(false);
+    // The actual location setting is handled by the parent via map click
+  };
+
+  // Determine border colors based on selection state
+  const getPickupBorderClass = () => {
+    if (!pickupLocation && !destinationLocation) {
+      return 'border-green-500';
+    }
+    return 'border-green-400';
+  };
+
+  const getDestinationBorderClass = () => {
+    if (pickupLocation && !destinationLocation) {
+      return 'border-red-500';
+    }
+    if (pickupLocation && destinationLocation) {
+      return 'border-green-400';
+    }
+    return 'border-gray-300';
+  };
+
+  return (
+    <div className="p-6">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          onSubmit();
+        }}
+      >
+        <div className="mb-5">
+          <label
+            htmlFor="pickupLocation"
+            className="block text-xs font-semibold text-gray-700 mb-2 uppercase tracking-wide"
+          >
+            Pickup Location
+          </label>
+          <div className="relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
+              A
+            </span>
+            <input
+              ref={pickupInputRef}
+              type="text"
+              id="pickupLocation"
+              value={pickupInputValue}
+              onChange={(e) => {
+                setPickupInputValue(e.target.value);
+                handlePickupInput(e.target.value);
+              }}
+              onFocus={() => {
+                if (pickupSuggestions.length > 0) {
+                  setShowPickupSuggestions(true);
+                }
+              }}
+              placeholder="Click on map to select pickup location"
+              readOnly
+              required
+              autoComplete="off"
+              className={`w-full pl-11 pr-12 py-3 text-sm border-2 ${getPickupBorderClass()} rounded-xl focus:outline-none transition-all pickup-input`}
+            />
+            <button
+              type="button"
+              onClick={getCurrentLocation}
+              disabled={isGettingLocation}
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-gray-500 hover:text-primary transition-colors"
+              title="Use current location"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className={`h-5 w-5 ${isGettingLocation ? 'animate-spin' : ''}`}
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+              </svg>
+            </button>
+            {showPickupSuggestions && (
+              <div
+                ref={pickupSuggestionsRef}
+                className="location-suggestions absolute top-full left-0 right-0 bg-white border border-gray-300 rounded-lg shadow-lg z-[1001] max-h-[200px] overflow-y-auto"
+              >
+                {pickupSuggestions.map((suggestion, index) => (
+                  <div
+                    key={`${suggestion.lat}-${suggestion.lon}-${index}`}
+                    className="p-2.5 cursor-pointer hover:bg-gray-100 transition-colors"
+                    onClick={() => handlePickupSelect(suggestion)}
+                  >
+                    {suggestion.display_name}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="mb-5">
+          <label
+            htmlFor="destination"
+            className="block text-xs font-semibold text-gray-700 mb-2 uppercase tracking-wide"
+          >
+            Destination
+          </label>
+          <div className="relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
+              B
+            </span>
+            <input
+              ref={destinationInputRef}
+              type="text"
+              id="destination"
+              value={destinationInputValue}
+              onChange={(e) => {
+                setDestinationInputValue(e.target.value);
+                handleDestinationInput(e.target.value);
+              }}
+              onFocus={() => {
+                if (destinationSuggestions.length > 0) {
+                  setShowDestinationSuggestions(true);
+                }
+              }}
+              placeholder="Click on map to select destination"
+              readOnly
+              required
+              autoComplete="off"
+              className={`w-full pl-11 pr-4 py-3 text-sm border-2 ${getDestinationBorderClass()} rounded-xl focus:outline-none transition-all destination-input`}
+            />
+            {showDestinationSuggestions && (
+              <div
+                ref={destinationSuggestionsRef}
+                className="location-suggestions absolute top-full left-0 right-0 bg-white border border-gray-300 rounded-lg shadow-lg z-[1001] max-h-[200px] overflow-y-auto"
+              >
+                {destinationSuggestions.map((suggestion, index) => (
+                  <div
+                    key={`${suggestion.lat}-${suggestion.lon}-${index}`}
+                    className="p-2.5 cursor-pointer hover:bg-gray-100 transition-colors"
+                    onClick={() => handleDestinationSelect(suggestion)}
+                  >
+                    {suggestion.display_name}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="mb-5">
+          <label
+            htmlFor="pickupTime"
+            className="block text-xs font-semibold text-gray-700 mb-2 uppercase tracking-wide"
+          >
+            Pickup Time
+          </label>
+          
+          {!showTimeInput ? (
+            // Display mode: show "Segera" or selected time with edit button
+            <div className="relative">
+              <div
+                className="w-full px-4 py-3 text-sm border-2 border-gray-300 rounded-xl bg-gray-50 cursor-pointer hover:border-primary transition-all flex items-center justify-between"
+                onClick={() => {
+                  setShowTimeInput(true);
+                  // Focus the time input after a short delay
+                  setTimeout(() => timeInputRef.current?.focus(), 50);
+                }}
+              >
+                <span className="text-gray-700">{getPickupTimeLabel()}</span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 text-gray-400 hover:text-primary transition-colors"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                  />
+                </svg>
+              </div>
+            </div>
+          ) : (
+            // Edit mode: show datetime input with clear button
+            <div className="relative">
+              <input
+                ref={timeInputRef}
+                type="datetime-local"
+                id="pickupTime"
+                value={pickupTime || ''}
+                onChange={(e) => {
+                  const newValue = e.target.value || null;
+                  // Validate minimum time (10 minutes from now)
+                  if (newValue) {
+                    const minTime = getMinPickupTime();
+                    if (newValue < minTime) {
+                      alert('Pickup time must be at least 10 minutes from now');
+                      return;
+                    }
+                  }
+                  setPickupTime(newValue);
+                }}
+                min={getMinPickupTime()}
+                className="w-full px-4 py-3 text-sm border-2 border-primary rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all text-gray-700 pr-12"
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  setPickupTime(null);
+                  setShowTimeInput(false);
+                }}
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-red-500 transition-colors"
+                title="Clear pickup time (set to Segera)"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+          )}
+          
+          {!showTimeInput && (
+            <p className="text-xs text-gray-500 mt-1">
+              {pickupTime ? 'Click to edit pickup time' : 'Default: Segera (immediate)'}
+            </p>
+          )}
+        </div>
+
+        <div className="mb-5">
+          <label
+            htmlFor="notes"
+            className="block text-xs font-semibold text-gray-700 mb-2 uppercase tracking-wide"
+          >
+            Notes (Optional)
+          </label>
+          <textarea
+            id="notes"
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            placeholder="Add any special instructions for the driver..."
+            rows={3}
+            className="w-full px-4 py-3 text-sm border-2 border-gray-300 rounded-xl focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all resize-y min-h-[80px]"
+          />
+        </div>
+
+        <div className="mb-5">
+          <label
+            htmlFor="paymentMethod"
+            className="block text-xs font-semibold text-gray-700 mb-2 uppercase tracking-wide"
+          >
+            Payment Method
+          </label>
+          <select
+            id="paymentMethod"
+            value={paymentMethod}
+            onChange={(e) => setPaymentMethod(e.target.value as 'cash' | 'qris')}
+            required
+            className="w-full px-4 py-3 text-sm border-2 border-gray-300 rounded-xl focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all"
+          >
+            <option value="cash">Cash</option>
+            <option value="qris">QRIS</option>
+          </select>
+        </div>
+
+        {priceEstimate && (
+          <div className="price-estimate bg-gray-100 p-4 rounded-xl mb-5">
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-sm text-gray-600">Base Fare</span>
+              <span className="text-lg font-semibold text-gray-900">
+                Rp {priceEstimate.baseFare.toLocaleString('id-ID')}
+              </span>
+            </div>
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-sm text-gray-600">Distance</span>
+              <span className="text-lg font-semibold text-gray-900">
+                {priceEstimate.distance.toFixed(2)} km
+              </span>
+            </div>
+            <div className="flex justify-between items-center pt-3 mt-3 border-t-2 border-gray-300">
+              <span className="text-sm text-gray-600">Total</span>
+              <span className="text-2xl font-bold text-primary">
+                Rp {priceEstimate.totalPrice.toLocaleString('id-ID')}
+              </span>
+            </div>
+          </div>
+        )}
+
+        <button
+          type="submit"
+          disabled={isSubmitting || !pickupLocation || !destinationLocation}
+          className="order-button w-full py-4 bg-gradient-to-r from-primary to-primary-dark text-white text-base font-semibold uppercase tracking-wider rounded-xl cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 disabled:bg-gray-300 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none"
+        >
+          {isSubmitting ? 'Placing Order...' : 'Order Now'}
+        </button>
+      </form>
+    </div>
+  );
+}
