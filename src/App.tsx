@@ -64,6 +64,7 @@ function AppContent() {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null); // null = checking, false = not logged in, true = logged in
   const [needsProfile, setNeedsProfile] = useState(false);
   const [isSyncingOrder, setIsSyncingOrder] = useState(true); // Track if waiting for server sync
+  const [hasReceivedOrderSync, setHasReceivedOrderSync] = useState(false); // Track if we received order sync from server
 
   const { location: geoLocation, getCurrentLocation: getGeoLocation } = useGeolocation();
 
@@ -76,12 +77,25 @@ function AppContent() {
       if (!authUser) {
         setNeedsProfile(false);
       }
-      // Reset syncing state when auth state resolves
-      setIsSyncingOrder(false);
     });
 
     return () => unsubscribe();
   }, [setUser]);
+
+  // Stop syncing after auth is resolved and we've waited for server sync
+  useEffect(() => {
+    if (isLoggedIn !== null) {
+      // Auth state resolved, give server 2 seconds to send order_state_sync
+      const timer = setTimeout(() => {
+        if (!hasReceivedOrderSync) {
+          // No order sync received, user doesn't have active order
+          setIsSyncingOrder(false);
+        }
+      }, 2000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [isLoggedIn, hasReceivedOrderSync]);
 
   const handleLoginSuccess = useCallback(() => {
     // isLoggedIn will be updated by the auth state listener
@@ -92,6 +106,7 @@ function AppContent() {
     setIsLoggedIn(false);
     setUser(null);
     setNeedsProfile(false);
+    setHasReceivedOrderSync(false);
     setOrderState('booking');
     resetLocations();
     setCurrentOrderId(null);
@@ -130,6 +145,8 @@ function AppContent() {
         const { order_id, ui_state } = data.data as any;
         setCurrentOrderId(order_id.toString());
         setOrderState(ui_state as OrderState);
+        // Mark that we received order sync
+        setHasReceivedOrderSync(true);
         // Stop syncing - we have the state
         setIsSyncingOrder(false);
         break;
@@ -140,6 +157,10 @@ function AppContent() {
         const { order_id: existingOrderId, ui_state: existingUiState } = data.data as any;
         setCurrentOrderId(existingOrderId.toString());
         setOrderState(existingUiState as OrderState);
+        // Mark that we received order sync
+        setHasReceivedOrderSync(true);
+        // Stop syncing
+        setIsSyncingOrder(false);
         setToast({
           message: 'You already have an active order',
           type: 'info',
