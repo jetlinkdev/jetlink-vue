@@ -145,7 +145,7 @@ export function OrderProvider({ children }: { children: ReactNode }) {
       notes,
       time: pickupTime ? Math.floor(new Date(pickupTime).getTime() / 1000) : null,
       payment: paymentMethod,
-      user_id: `customer_${user.uid}`, // Use Firebase UID directly
+      user_id: user.uid, // Use Firebase UID directly without prefix
     };
 
     return {
