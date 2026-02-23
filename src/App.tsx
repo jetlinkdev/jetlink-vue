@@ -9,6 +9,7 @@ import { DriverAssignedPanel } from './components/DriverAssignedPanel';
 import { ConnectionStatus as ConnectionStatusComponent } from './components/ConnectionStatus';
 import { MapLegend } from './components/MapLegend';
 import { LoginDialog } from './components/LoginDialog';
+import { ProfileCompletionDialog } from './components/ProfileCompletionDialog';
 import { Bid, WebSocketMessage } from './types';
 import { DEFAULT_LOCATION, MAP_CONFIG } from './config/constants';
 import { authService } from './services/authService';
@@ -60,7 +61,8 @@ function AppContent() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isGettingLocation, setIsGettingLocation] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'info' } | null>(null);
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null); // null = checking, false = not logged in, true = logged in
+  const [needsProfile, setNeedsProfile] = useState(false);
 
   const { location: geoLocation, getCurrentLocation: getGeoLocation } = useGeolocation();
 
@@ -69,29 +71,63 @@ function AppContent() {
     const unsubscribe = authService.subscribeToAuthState((authUser) => {
       setUser(authUser);
       setIsLoggedIn(!!authUser);
+      // Reset needsProfile when user logs out
+      if (!authUser) {
+        setNeedsProfile(false);
+      }
     });
 
     return () => unsubscribe();
   }, [setUser]);
 
   const handleLoginSuccess = useCallback(() => {
-    setIsLoggedIn(true);
+    // isLoggedIn will be updated by the auth state listener
   }, []);
 
   const handleLogout = useCallback(() => {
     authService.signOut();
     setIsLoggedIn(false);
     setUser(null);
+    setNeedsProfile(false);
     setOrderState('booking');
     resetLocations();
     setCurrentOrderId(null);
     setAssignedDriver(null);
   }, [setUser, setOrderState, resetLocations, setCurrentOrderId]);
 
+  // Send auth message to backend when user logs in
+  useEffect(() => {
+    if (user && isLoggedIn && !needsProfile) {
+      const authMessage: WebSocketMessage = {
+        intent: 'auth',
+        data: {
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName,
+          photoURL: user.photoURL,
+        },
+        timestamp: Math.floor(Date.now() / 1000),
+      };
+      sendMessage(authMessage);
+    }
+  }, [user, isLoggedIn, needsProfile]);
+
   const handleWebSocketMessage = useCallback((data: WebSocketMessage) => {
     console.log('Received message:', data);
 
     switch (data.intent) {
+      case 'auth_success':
+        console.log('Auth success:', data.data);
+        // User is authenticated and profile is complete
+        setNeedsProfile(false);
+        break;
+
+      case 'auth_profile_needed':
+        console.log('Profile needed:', data.data);
+        // User needs to complete profile
+        setNeedsProfile(true);
+        break;
+
       case 'order_created':
         console.log('Order created successfully:', data.data);
         // Backend returns order ID as number
@@ -147,6 +183,23 @@ function AppContent() {
   }, [setCurrentOrderId, setOrderState, addBid, resetLocations]);
 
   const { status, sendMessage } = useWebSocket(handleWebSocketMessage);
+
+  // Send complete profile message to backend
+  const handleCompleteProfile = useCallback((profileData: { email: string; displayName: string; phoneNumber: string }) => {
+    if (!user) return;
+
+    const completeProfileMessage: WebSocketMessage = {
+      intent: 'complete_profile',
+      data: {
+        uid: user.uid,
+        email: profileData.email,
+        displayName: profileData.displayName,
+        phoneNumber: profileData.phoneNumber,
+      },
+      timestamp: Math.floor(Date.now() / 1000),
+    };
+    sendMessage(completeProfileMessage);
+  }, [user, sendMessage]);
 
   // Handle geolocation result
   useEffect(() => {
@@ -275,8 +328,13 @@ function AppContent() {
 
   return (
     <>
-      {/* Show Login Dialog if not logged in */}
-      {!isLoggedIn && <LoginDialog onLoginSuccess={handleLoginSuccess} />}
+      {/* Show Login Dialog only if user is NOT logged in */}
+      {isLoggedIn === false && <LoginDialog onLoginSuccess={handleLoginSuccess} />}
+
+      {/* Show Profile Completion Dialog if user needs to complete profile */}
+      {needsProfile && (
+        <ProfileCompletionDialog onComplete={handleCompleteProfile} />
+      )}
 
       <Map
         center={mapCenter}
