@@ -65,3 +65,14 @@ export interface Suggestion {
   lon: string;
   display_name: string;
 }
+
+export interface ReviewData {
+  order_id: number;
+  driver_id: string;
+  driver_name: string;
+  driver_photo?: string;
+  vehicle?: string;
+  plate_number?: string;
+  rating: number;
+  review?: string;
+}

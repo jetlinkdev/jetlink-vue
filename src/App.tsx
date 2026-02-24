@@ -10,7 +10,8 @@ import { ConnectionStatus as ConnectionStatusComponent } from './components/Conn
 import { MapLegend } from './components/MapLegend';
 import { LoginDialog } from './components/LoginDialog';
 import { ProfileCompletionDialog } from './components/ProfileCompletionDialog';
-import { Bid, WebSocketMessage, OrderState } from './types';
+import { RatingDialog } from './components/RatingDialog';
+import { Bid, WebSocketMessage, OrderState, ReviewData } from './types';
 import { DEFAULT_LOCATION, MAP_CONFIG } from './config/constants';
 import { authService } from './services/authService';
 
@@ -65,6 +66,8 @@ function AppContent() {
   const [needsProfile, setNeedsProfile] = useState(false);
   const [isSyncingOrder, setIsSyncingOrder] = useState(true); // Track if waiting for server sync
   const [hasReceivedOrderSync, setHasReceivedOrderSync] = useState(false); // Track if we received order sync from server
+  const [showRatingDialog, setShowRatingDialog] = useState(false);
+  const [reviewData, setReviewData] = useState<ReviewData | null>(null);
 
   const { location: geoLocation, getCurrentLocation: getGeoLocation } = useGeolocation();
 
@@ -142,12 +145,12 @@ function AppContent() {
       case 'order_state_sync':
         console.log('Order state synced from server:', data.data);
         // Server tells us what state to show (multi-tab sync)
-        const { order_id, ui_state, pickup, destination, ...orderData } = data.data as any;
-        
+        const { order_id, ui_state, pickup, destination, bids, ...orderData } = data.data as any;
+
         // Update state
         setCurrentOrderId(order_id.toString());
         setOrderState(ui_state as OrderState);
-        
+
         // Restore order data from server
         if (pickup) {
           setPickupLocation(
@@ -161,9 +164,25 @@ function AppContent() {
             destination
           );
         }
-        // Note: Can't restore notes, payment, time as they're not in context
-        // These would need to be added to OrderContext if needed
-        
+
+        // Restore bids from server
+        if (bids && Array.isArray(bids)) {
+          console.log(`Restoring ${bids.length} existing bids`);
+          bids.forEach((bid: any) => {
+            // Convert bid to Bid type and add to context
+            addBid({
+              bid_id: bid.bid_id?.toString() || bid.id?.toString() || '',
+              driver_id: bid.driver_id || '',
+              driver_name: bid.driver_name || 'Driver',
+              bid_price: bid.bid_price || 0,
+              eta_minutes: bid.eta_minutes || 5,
+              rating: bid.rating || 4.8,
+              vehicle: bid.vehicle || 'Toyota Avanza',
+              plate_number: bid.plate_number || '',
+            });
+          });
+        }
+
         // Mark that we received order sync
         setHasReceivedOrderSync(true);
         // Stop syncing - we have the state
@@ -215,7 +234,24 @@ function AppContent() {
         break;
 
       case 'trip_completed':
-        setToast({ message: 'Trip completed successfully!', type: 'success' });
+        console.log('Trip completed:', data.data);
+        const tripData = data.data as any;
+        
+        // Show rating dialog if flag is set
+        if (tripData.show_rating) {
+          setReviewData({
+            order_id: tripData.order_id,
+            driver_id: tripData.driver_id,
+            driver_name: tripData.driver_name || 'Driver',
+            driver_photo: tripData.driver_photo,
+            vehicle: tripData.vehicle,
+            plate_number: tripData.plate_number,
+            rating: 0,
+          });
+          setShowRatingDialog(true);
+        }
+        
+        setToast({ message: 'Trip completed! Please rate your driver.', type: 'success' });
         break;
 
       case 'order_cancelled':
@@ -366,6 +402,36 @@ function AppContent() {
     setAssignedDriver(null);
   }, [setOrderState, resetLocations, setAssignedDriver]);
 
+  const handleReviewSubmit = useCallback((rating: number, review: string) => {
+    if (!reviewData) return;
+
+    const reviewMessage: WebSocketMessage = {
+      intent: 'submit_review',
+      data: {
+        order_id: reviewData.order_id,
+        driver_id: reviewData.driver_id,
+        rating: rating,
+        review: review,
+      },
+      timestamp: Math.floor(Date.now() / 1000),
+    };
+
+    sendMessage(reviewMessage);
+    setShowRatingDialog(false);
+    setReviewData(null);
+    setToast({ message: 'Thank you for your review!', type: 'success' });
+    
+    // Reset to booking state after review
+    setOrderState('booking');
+    resetLocations();
+    setCurrentOrderId(null);
+  }, [reviewData, sendMessage, setOrderState, resetLocations, setCurrentOrderId]);
+
+  const handleRatingDialogClose = useCallback(() => {
+    setShowRatingDialog(false);
+    setReviewData(null);
+  }, []);
+
   // Initialize map with current location on mount
   useEffect(() => {
     if (navigator.geolocation) {
@@ -499,6 +565,13 @@ function AppContent() {
           onClose={() => setToast(null)}
         />
       )}
+
+      <RatingDialog
+        isOpen={showRatingDialog}
+        reviewData={reviewData}
+        onSubmit={handleReviewSubmit}
+        onClose={handleRatingDialogClose}
+      />
         </>
       )}
     </>
