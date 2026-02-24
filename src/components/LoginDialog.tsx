@@ -104,9 +104,23 @@ export function LoginDialog({ onLoginSuccess }: LoginDialogProps) {
         {/* Terms */}
         <p className="text-xs text-gray-500 text-center mt-6">
           By signing in, you agree to our{' '}
-          <a href="#" className="text-green-600 hover:underline">Terms of Service</a>
+          <a
+            href="/terms-of-service.html"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-green-600 hover:text-green-700 hover:underline font-medium transition-colors"
+          >
+            Terms of Service
+          </a>
           {' '}and{' '}
-          <a href="#" className="text-green-600 hover:underline">Privacy Policy</a>
+          <a
+            href="/privacy-policy.html"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-green-600 hover:text-green-700 hover:underline font-medium transition-colors"
+          >
+            Privacy Policy
+          </a>
         </p>
       </div>
     </div>
