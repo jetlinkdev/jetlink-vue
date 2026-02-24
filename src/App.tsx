@@ -49,6 +49,8 @@ function AppContent() {
     createOrderMessage,
     cancelOrderMessage,
     acceptBidMessage,
+    declineBidMessage,
+    removeBid,
     pickupLocation,
     destinationLocation,
     user,
@@ -226,7 +228,10 @@ function AppContent() {
         break;
 
       case 'bid_rejected':
-        setToast({ message: 'Your bid was rejected.', type: 'info' });
+        console.log('Bid rejected:', data.data);
+        const rejectedBidData = data.data as any;
+        // Note: Backend broadcasts this to the driver, not customer
+        // Customer doesn't need to handle this
         break;
 
       case 'driver_arrived':
@@ -392,8 +397,13 @@ function AppContent() {
 
   const handleDeclineBid = useCallback((bid: Bid) => {
     console.log('Declining bid:', bid);
-    setToast({ message: 'Bid declined', type: 'info' });
-  }, []);
+    // Remove the declined bid from the list
+    removeBid(bid.bid_id);
+    setToast({ 
+      message: `Bid from ${bid.driver_name || 'Driver'} declined`, 
+      type: 'info' 
+    });
+  }, [removeBid]);
 
   const handleBackToHome = useCallback(() => {
     setIsSubmitting(false);

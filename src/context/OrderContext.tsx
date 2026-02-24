@@ -46,6 +46,8 @@ interface OrderContextType {
   createOrderMessage: () => WebSocketMessage | null;
   cancelOrderMessage: () => WebSocketMessage | null;
   acceptBidMessage: (bid: Bid) => WebSocketMessage | null;
+  declineBidMessage: (bid: Bid) => WebSocketMessage | null;
+  removeBid: (bidId: string) => void;
   getMinPickupTime: () => string;
   getPickupTimeLabel: () => string;
 }
@@ -183,6 +185,18 @@ export function OrderProvider({ children }: { children: ReactNode }) {
     };
   }, [currentOrderId]);
 
+  const declineBidMessage = useCallback((bid: Bid): WebSocketMessage | null => {
+    // Currently, there's no backend endpoint for declining individual bids
+    // Customer can only accept one bid (which auto-declines others)
+    // This is a placeholder for future implementation
+    console.log('Decline bid (not implemented):', bid);
+    return null;
+  }, []);
+
+  const removeBid = useCallback((bidId: string) => {
+    setBids((prev) => prev.filter((b) => b.bid_id !== bidId));
+  }, []);
+
   return (
     <OrderContext.Provider
       value={{
@@ -214,6 +228,8 @@ export function OrderProvider({ children }: { children: ReactNode }) {
         createOrderMessage,
         cancelOrderMessage,
         acceptBidMessage,
+        declineBidMessage,
+        removeBid,
         getMinPickupTime,
         getPickupTimeLabel,
       }}
