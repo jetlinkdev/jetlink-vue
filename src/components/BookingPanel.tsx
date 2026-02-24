@@ -161,7 +161,7 @@ export function BookingPanel({ onSubmit, isSubmitting, getCurrentLocation, isGet
   };
 
   return (
-    <div className="p-6">
+    <div className="p-6 pb-24 md:pb-6">
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -472,13 +472,15 @@ export function BookingPanel({ onSubmit, isSubmitting, getCurrentLocation, isGet
           </div>
         )}
 
-        <button
-          type="submit"
-          disabled={isSubmitting || !pickupLocation || !destinationLocation}
-          className="order-button w-full py-4 bg-gradient-to-r from-primary to-primary-dark text-white text-base font-semibold uppercase tracking-wider rounded-xl cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 disabled:bg-gray-300 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none"
-        >
-          {isSubmitting ? 'Placing Order...' : 'Order Now'}
-        </button>
+        <div className="fixed bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-white via-white to-transparent md:static md:bg-none md:p-0">
+          <button
+            type="submit"
+            disabled={isSubmitting || !pickupLocation || !destinationLocation}
+            className="order-button w-full py-4 bg-gradient-to-r from-primary to-primary-dark text-white text-base font-semibold uppercase tracking-wider rounded-xl cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 disabled:bg-gray-300 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none"
+          >
+            {isSubmitting ? 'Placing Order...' : 'Order Now'}
+          </button>
+        </div>
       </form>
     </div>
   );
