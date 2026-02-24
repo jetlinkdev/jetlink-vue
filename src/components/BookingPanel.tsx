@@ -472,6 +472,30 @@ export function BookingPanel({ onSubmit, isSubmitting, getCurrentLocation, isGet
           </div>
         )}
 
+        {/* Legal Links */}
+        <div className="text-center mb-4 text-xs text-gray-500">
+          <p className="mb-2">By continuing, you agree to our</p>
+          <div className="flex justify-center gap-3">
+            <a
+              href="/terms-of-service.html"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary hover:text-primary-dark underline transition-colors"
+            >
+              Terms of Service
+            </a>
+            <span>•</span>
+            <a
+              href="/privacy-policy.html"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary hover:text-primary-dark underline transition-colors"
+            >
+              Privacy Policy
+            </a>
+          </div>
+        </div>
+
         <div className="fixed bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-white via-white to-transparent md:static md:bg-none md:p-0">
           <button
             type="submit"
