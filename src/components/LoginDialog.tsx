@@ -34,22 +34,11 @@ export function LoginDialog({ onLoginSuccess }: LoginDialogProps) {
       <div className="bg-white rounded-3xl p-8 max-w-md w-full mx-4 shadow-2xl animate-[slideIn_0.3s_ease-out]">
         {/* App Logo */}
         <div className="flex justify-center mb-6">
-          <div className="w-20 h-20 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center shadow-lg">
-            <svg
-              className="w-12 h-12 text-white"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M13 10V3L4 14h7v7l9-11h-7z"
-              />
-            </svg>
-          </div>
+          <img
+            src="/jetlink_logo.webp"
+            alt="Jetlink Logo"
+            className="w-24 h-24 object-contain"
+          />
         </div>
 
         {/* Title */}
