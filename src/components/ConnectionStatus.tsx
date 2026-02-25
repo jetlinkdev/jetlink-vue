@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import type { ConnectionStatus as ConnectionStatusType } from '../types';
 
 interface ConnectionStatusProps {
@@ -5,11 +6,12 @@ interface ConnectionStatusProps {
 }
 
 export function ConnectionStatus({ status }: ConnectionStatusProps) {
+  const { t } = useTranslation();
   const statusConfig = {
-    connecting: { color: 'bg-yellow-500', text: 'Connecting...', animate: true },
-    connected: { color: 'bg-green-500', text: 'Connected', animate: false },
-    disconnected: { color: 'bg-red-500', text: 'Disconnected', animate: false },
-    reconnecting: { color: 'bg-orange-500', text: 'Reconnecting...', animate: true },
+    connecting: { color: 'bg-yellow-500', text: t('connection.connecting'), animate: true },
+    connected: { color: 'bg-green-500', text: t('connection.connected'), animate: false },
+    disconnected: { color: 'bg-red-500', text: t('connection.disconnected'), animate: false },
+    reconnecting: { color: 'bg-orange-500', text: t('connection.reconnecting'), animate: true },
   };
 
   const config = statusConfig[status];

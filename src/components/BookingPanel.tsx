@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useOrder } from '../context/OrderContext';
 import { Suggestion } from '../types';
 import { NOMINATIM_URL } from '../config/constants';
@@ -20,6 +21,7 @@ function debounce<T extends (...args: string[]) => Promise<void>>(func: T, wait:
 }
 
 export function BookingPanel({ onSubmit, isSubmitting, getCurrentLocation, isGettingLocation }: BookingPanelProps) {
+  const { t } = useTranslation();
   const {
     pickupAddress,
     destinationAddress,
@@ -173,7 +175,7 @@ export function BookingPanel({ onSubmit, isSubmitting, getCurrentLocation, isGet
             htmlFor="pickupLocation"
             className="block text-xs font-semibold text-gray-700 mb-2 uppercase tracking-wide"
           >
-            Pickup Location
+            {t('booking.pickupLabel')}
           </label>
           <div className="relative">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
@@ -193,7 +195,7 @@ export function BookingPanel({ onSubmit, isSubmitting, getCurrentLocation, isGet
                   setShowPickupSuggestions(true);
                 }
               }}
-              placeholder="Click on map to select pickup location"
+              placeholder={t('booking.pickupPlaceholder')}
               readOnly
               required
               autoComplete="off"
@@ -204,7 +206,7 @@ export function BookingPanel({ onSubmit, isSubmitting, getCurrentLocation, isGet
               onClick={getCurrentLocation}
               disabled={isGettingLocation}
               className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-gray-500 hover:text-primary transition-colors"
-              title="Use current location"
+              title={t('booking.useCurrentLocation')}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -251,7 +253,7 @@ export function BookingPanel({ onSubmit, isSubmitting, getCurrentLocation, isGet
             htmlFor="destination"
             className="block text-xs font-semibold text-gray-700 mb-2 uppercase tracking-wide"
           >
-            Destination
+            {t('booking.destinationLabel')}
           </label>
           <div className="relative">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
@@ -271,7 +273,7 @@ export function BookingPanel({ onSubmit, isSubmitting, getCurrentLocation, isGet
                   setShowDestinationSuggestions(true);
                 }
               }}
-              placeholder="Click on map to select destination"
+              placeholder={t('booking.destinationPlaceholder')}
               readOnly
               required
               autoComplete="off"
@@ -301,9 +303,9 @@ export function BookingPanel({ onSubmit, isSubmitting, getCurrentLocation, isGet
             htmlFor="pickupTime"
             className="block text-xs font-semibold text-gray-700 mb-2 uppercase tracking-wide"
           >
-            Pickup Time
+            {t('booking.pickupTimeLabel')}
           </label>
-          
+
           {!showTimeInput ? (
             // Display mode: show "Segera" or selected time with edit button
             <div className="relative">
@@ -381,10 +383,10 @@ export function BookingPanel({ onSubmit, isSubmitting, getCurrentLocation, isGet
               </button>
             </div>
           )}
-          
+
           {!showTimeInput && (
             <p className="text-xs text-gray-500 mt-1">
-              {pickupTime ? 'Click to edit pickup time' : 'Default: Segera (immediate)'}
+              {pickupTime ? t('booking.pickupTimeEdit') : t('booking.pickupTimeDefault')}
             </p>
           )}
         </div>
@@ -394,13 +396,13 @@ export function BookingPanel({ onSubmit, isSubmitting, getCurrentLocation, isGet
             htmlFor="notes"
             className="block text-xs font-semibold text-gray-700 mb-2 uppercase tracking-wide"
           >
-            Notes (Optional)
+            {t('booking.notesLabel')}
           </label>
           <textarea
             id="notes"
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            placeholder="Add any special instructions for the driver..."
+            placeholder={t('booking.notesPlaceholder')}
             rows={3}
             className="w-full px-4 py-3 text-sm border-2 border-gray-300 rounded-xl focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all resize-y min-h-[80px]"
           />
@@ -408,7 +410,7 @@ export function BookingPanel({ onSubmit, isSubmitting, getCurrentLocation, isGet
 
         <div className="mb-5">
           <label className="block text-xs font-semibold text-gray-700 mb-2 uppercase tracking-wide">
-            Payment Method
+            {t('booking.paymentMethodLabel')}
           </label>
           <RadioGroup
             value={paymentMethod}
@@ -425,7 +427,7 @@ export function BookingPanel({ onSubmit, isSubmitting, getCurrentLocation, isGet
                   }`}
                 >
                   <div className="text-2xl mb-2">💵</div>
-                  <div className="text-sm font-semibold text-gray-700">Cash</div>
+                  <div className="text-sm font-semibold text-gray-700">{t('booking.paymentCash')}</div>
                   {checked && (
                     <div className="absolute top-2 right-2 w-5 h-5 bg-primary rounded-full flex items-center justify-center">
                       <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -447,7 +449,7 @@ export function BookingPanel({ onSubmit, isSubmitting, getCurrentLocation, isGet
                   }`}
                 >
                   <div className="text-2xl mb-2">📱</div>
-                  <div className="text-sm font-semibold text-gray-700">QRIS</div>
+                  <div className="text-sm font-semibold text-gray-700">{t('booking.paymentQris')}</div>
                   {checked && (
                     <div className="absolute top-2 right-2 w-5 h-5 bg-primary rounded-full flex items-center justify-center">
                       <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -464,7 +466,7 @@ export function BookingPanel({ onSubmit, isSubmitting, getCurrentLocation, isGet
         {priceEstimate && (
           <div className="distance-info bg-gray-100 p-4 rounded-xl mb-5">
             <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">Distance</span>
+              <span className="text-sm text-gray-600">{t('booking.distanceLabel')}</span>
               <span className="text-lg font-semibold text-gray-900">
                 {priceEstimate.distance.toFixed(2)} km
               </span>
@@ -474,7 +476,7 @@ export function BookingPanel({ onSubmit, isSubmitting, getCurrentLocation, isGet
 
         {/* Legal Links */}
         <div className="text-center mb-4 text-xs text-gray-500">
-          <p className="mb-2">By continuing, you agree to our</p>
+          <p className="mb-2">{t('login.termsText')}</p>
           <div className="flex justify-center gap-3">
             <a
               href="/terms-of-service.html"
@@ -482,7 +484,7 @@ export function BookingPanel({ onSubmit, isSubmitting, getCurrentLocation, isGet
               rel="noopener noreferrer"
               className="text-primary hover:text-primary-dark underline transition-colors"
             >
-              Terms of Service
+              {t('login.termsLink')}
             </a>
             <span>•</span>
             <a
@@ -491,7 +493,7 @@ export function BookingPanel({ onSubmit, isSubmitting, getCurrentLocation, isGet
               rel="noopener noreferrer"
               className="text-primary hover:text-primary-dark underline transition-colors"
             >
-              Privacy Policy
+              {t('login.privacyLink')}
             </a>
           </div>
         </div>
@@ -502,7 +504,7 @@ export function BookingPanel({ onSubmit, isSubmitting, getCurrentLocation, isGet
             disabled={isSubmitting || !pickupLocation || !destinationLocation}
             className="order-button w-full py-4 bg-gradient-to-r from-primary to-primary-dark text-white text-base font-semibold uppercase tracking-wider rounded-xl cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 disabled:bg-gray-300 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none"
           >
-            {isSubmitting ? 'Placing Order...' : 'Order Now'}
+            {isSubmitting ? t('booking.placingOrder') : t('booking.bookButton')}
           </button>
         </div>
       </form>

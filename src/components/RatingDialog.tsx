@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ReviewData } from '../types';
 
 interface RatingDialogProps {
@@ -9,6 +10,7 @@ interface RatingDialogProps {
 }
 
 export function RatingDialog({ isOpen, reviewData, onSubmit, onClose }: RatingDialogProps) {
+  const { t } = useTranslation();
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [reviewText, setReviewText] = useState('');
@@ -26,7 +28,7 @@ export function RatingDialog({ isOpen, reviewData, onSubmit, onClose }: RatingDi
 
   const handleSubmit = async () => {
     if (rating === 0) {
-      alert('Please select a rating');
+      alert(t('rating.pleaseSelect'));
       return;
     }
 
@@ -39,11 +41,11 @@ export function RatingDialog({ isOpen, reviewData, onSubmit, onClose }: RatingDi
   const getRatingLabel = (value: number) => {
     const labels = [
       '',
-      '😠 Very Bad',
-      '😕 Bad',
-      '😐 Okay',
-      '😊 Good',
-      '😍 Excellent',
+      `😠 ${t('rating.veryBad')}`,
+      `😕 ${t('rating.bad')}`,
+      `😐 ${t('rating.okay')}`,
+      `😊 ${t('rating.good')}`,
+      `😍 ${t('rating.excellent')}`,
     ];
     return labels[value];
   };
@@ -53,8 +55,8 @@ export function RatingDialog({ isOpen, reviewData, onSubmit, onClose }: RatingDi
       <div className="bg-white rounded-3xl w-full max-w-md mx-4 overflow-hidden shadow-2xl animate-[scaleIn_0.3s_ease-out]">
         {/* Header */}
         <div className="bg-gradient-to-r from-green-500 to-green-600 p-6 text-white text-center">
-          <h2 className="text-2xl font-bold mb-1">Rate Your Driver</h2>
-          <p className="text-green-100 text-sm">How was your ride experience?</p>
+          <h2 className="text-2xl font-bold mb-1">{t('rating.title')}</h2>
+          <p className="text-green-100 text-sm">{t('rating.subtitle')}</p>
         </div>
 
         {/* Driver Info */}
@@ -122,12 +124,12 @@ export function RatingDialog({ isOpen, reviewData, onSubmit, onClose }: RatingDi
           {/* Review Text */}
           <div className="mb-6">
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Leave a review (optional)
+              {t('rating.commentLabel')}
             </label>
             <textarea
               value={reviewText}
               onChange={(e) => setReviewText(e.target.value)}
-              placeholder="Share your experience with this driver..."
+              placeholder={t('rating.commentPlaceholder')}
               rows={4}
               className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-green-500 transition-colors resize-none text-sm"
               maxLength={500}
@@ -145,7 +147,7 @@ export function RatingDialog({ isOpen, reviewData, onSubmit, onClose }: RatingDi
               disabled={isSubmitting}
               className="flex-1 py-3 border-2 border-gray-300 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Later
+              {t('rating.later')}
             </button>
             <button
               type="button"
@@ -159,10 +161,10 @@ export function RatingDialog({ isOpen, reviewData, onSubmit, onClose }: RatingDi
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                   </svg>
-                  Submitting...
+                  {t('rating.submitting')}
                 </span>
               ) : (
-                'Submit Review'
+                t('rating.submitButton')
               )}
             </button>
           </div>

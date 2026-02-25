@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { authService } from '../services/authService';
 
 interface ProfileCompletionDialogProps {
@@ -6,6 +7,7 @@ interface ProfileCompletionDialogProps {
 }
 
 export function ProfileCompletionDialog({ onComplete }: ProfileCompletionDialogProps) {
+  const { t } = useTranslation();
   const user = authService.getCurrentUser();
   const [email, setEmail] = useState(user?.email || '');
   const [displayName, setDisplayName] = useState(user?.displayName || '');
@@ -70,16 +72,16 @@ export function ProfileCompletionDialog({ onComplete }: ProfileCompletionDialogP
 
         {/* Title */}
         <h1 className="text-2xl font-bold text-gray-900 text-center mb-2">
-          Complete Your Profile
+          {t('profile.title')}
         </h1>
         <p className="text-gray-600 text-center mb-6">
-          Please provide your information to continue
+          {t('profile.subtitle')}
         </p>
 
         {/* Error Message */}
         {error && (
           <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl">
-            <p className="text-sm text-red-600 text-center">{error}</p>
+            <p className="text-sm text-red-600 text-center">{t('profile.error')}</p>
           </div>
         )}
 
@@ -88,13 +90,13 @@ export function ProfileCompletionDialog({ onComplete }: ProfileCompletionDialogP
           {/* Display Name */}
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Full Name *
+              {t('profile.nameLabel')} *
             </label>
             <input
               type="text"
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
-              placeholder="Enter your full name"
+              placeholder={t('profile.namePlaceholder')}
               required
               className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-blue-500 transition-colors"
             />
@@ -103,13 +105,13 @@ export function ProfileCompletionDialog({ onComplete }: ProfileCompletionDialogP
           {/* Email */}
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Email *
+              {t('profile.emailLabel')} *
             </label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email"
+              placeholder={t('profile.emailPlaceholder')}
               required
               className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-blue-500 transition-colors"
             />
@@ -118,13 +120,13 @@ export function ProfileCompletionDialog({ onComplete }: ProfileCompletionDialogP
           {/* Phone Number */}
           <div className="mb-6">
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Phone Number (Optional)
+              {t('profile.phoneLabel')}
             </label>
             <input
               type="tel"
               value={phoneNumber}
               onChange={(e) => setPhoneNumber(e.target.value)}
-              placeholder="Enter your phone number"
+              placeholder={t('profile.phonePlaceholder')}
               className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-blue-500 transition-colors"
             />
           </div>
@@ -135,16 +137,16 @@ export function ProfileCompletionDialog({ onComplete }: ProfileCompletionDialogP
             disabled={isLoading}
             className="w-full py-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold rounded-xl transition-all duration-200 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isLoading ? 'Saving...' : 'Complete Profile'}
+            {isLoading ? t('profile.saving') : t('profile.saveButton')}
           </button>
         </form>
 
         {/* Terms */}
         <p className="text-xs text-gray-500 text-center mt-6">
-          By completing your profile, you agree to our{' '}
-          <a href="#" className="text-blue-600 hover:underline">Terms of Service</a>
-          {' '}and{' '}
-          <a href="#" className="text-blue-600 hover:underline">Privacy Policy</a>
+          {t('login.termsText')}{' '}
+          <a href="#" className="text-blue-600 hover:underline">{t('login.termsLink')}</a>
+          {' '}{t('login.and')}{' '}
+          <a href="#" className="text-blue-600 hover:underline">{t('login.privacyLink')}</a>
         </p>
       </div>
     </div>

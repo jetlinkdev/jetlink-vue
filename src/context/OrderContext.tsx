@@ -47,7 +47,7 @@ interface OrderContextType {
   cancelOrderMessage: () => WebSocketMessage | null;
   acceptBidMessage: (bid: Bid) => WebSocketMessage | null;
   declineBidMessage: (bid: Bid) => WebSocketMessage | null;
-  removeBid: (bidId: string) => void;
+  removeBid: (bidId: number) => void;
   getMinPickupTime: () => string;
   getPickupTimeLabel: () => string;
 }
@@ -173,7 +173,7 @@ export function OrderProvider({ children }: { children: ReactNode }) {
     }
 
     // Convert to number for backend
-    const orderId = typeof currentOrderId === 'string' ? parseInt(currentOrderId, 10) : currentOrderId;
+    const orderId = parseInt(currentOrderId, 10);
 
     return {
       intent: 'select_bid',
@@ -193,7 +193,7 @@ export function OrderProvider({ children }: { children: ReactNode }) {
     return null;
   }, []);
 
-  const removeBid = useCallback((bidId: string) => {
+  const removeBid = useCallback((bidId: number) => {
     setBids((prev) => prev.filter((b) => b.bid_id !== bidId));
   }, []);
 

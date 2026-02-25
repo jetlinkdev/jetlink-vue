@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { OrderProvider, useOrder } from './context/OrderContext';
 import { useWebSocket } from './hooks/useWebSocket';
 import { useGeolocation } from './hooks/useGeolocation';
@@ -11,6 +12,7 @@ import { MapLegend } from './components/MapLegend';
 import { LoginDialog } from './components/LoginDialog';
 import { ProfileCompletionDialog } from './components/ProfileCompletionDialog';
 import { RatingDialog } from './components/RatingDialog';
+import { LanguageSelector } from './components/LanguageSelector';
 import { Bid, WebSocketMessage, OrderState, ReviewData } from './types';
 import { DEFAULT_LOCATION, MAP_CONFIG } from './config/constants';
 import { authService } from './services/authService';
@@ -36,6 +38,7 @@ function Toast({ message, type, onClose }: { message: string; type: 'success' | 
 }
 
 function AppContent() {
+  const { t } = useTranslation();
   const {
     orderState,
     setOrderState,
@@ -228,7 +231,6 @@ function AppContent() {
 
       case 'bid_rejected':
         console.log('Bid rejected:', data.data);
-        const rejectedBidData = data.data as any;
         // Note: Backend broadcasts this to the driver, not customer
         // Customer doesn't need to handle this
         break;
@@ -398,9 +400,9 @@ function AppContent() {
     console.log('Declining bid:', bid);
     // Remove the declined bid from the list
     removeBid(bid.bid_id);
-    setToast({ 
-      message: `Bid from ${bid.driver_name || 'Driver'} declined`, 
-      type: 'info' 
+    setToast({
+      message: `Bid from ${bid.driver_name || 'Driver'} declined`,
+      type: 'info'
     });
   }, [removeBid]);
 
@@ -475,7 +477,7 @@ function AppContent() {
           <div className="bg-white rounded-2xl p-6 shadow-2xl">
             <div className="flex flex-col items-center gap-4">
               <div className="w-12 h-12 border-4 border-green-500 border-t-transparent rounded-full animate-spin"></div>
-              <p className="text-gray-600 font-medium">Loading...</p>
+              <p className="text-gray-600 font-medium">{t('app.loading')}</p>
             </div>
           </div>
         </div>
@@ -504,21 +506,24 @@ function AppContent() {
           <>
             <div className="p-6 pb-4 border-b border-gray-200">
               <div className="flex justify-between items-center mb-1">
-                <h1 className="text-2xl font-bold text-gray-900">🚗 Book Your Ride</h1>
-                {user && (
-                  <button
-                    onClick={handleLogout}
-                    className="text-xs text-gray-500 hover:text-red-500 transition-colors flex items-center gap-1"
-                    title="Logout"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                    </svg>
-                  </button>
-                )}
+                <h1 className="text-2xl font-bold text-gray-900">🚗 {t('booking.title')}</h1>
+                <div className="flex items-center gap-2">
+                  <LanguageSelector />
+                  {user && (
+                    <button
+                      onClick={handleLogout}
+                      className="text-xs text-gray-500 hover:text-red-500 transition-colors flex items-center gap-1"
+                      title={t('app.logout')}
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                      </svg>
+                    </button>
+                  )}
+                </div>
               </div>
               <div className="flex justify-between items-center">
-                <p className="text-sm text-gray-600">Enter your trip details below</p>
+                <p className="text-sm text-gray-600">{t('booking.estimateLabel')}</p>
                 {user && (
                   <div className="flex items-center gap-2">
                     {user.photoURL && (
@@ -547,8 +552,8 @@ function AppContent() {
         {orderState === 'waiting_bids' && (
           <>
             <div className="p-6 pb-4 border-b border-gray-200">
-              <h1 className="text-2xl font-bold text-gray-900 mb-1">🚗 Finding Nearby Drivers</h1>
-              <p className="text-sm text-gray-600">Waiting for driver bids...</p>
+              <h1 className="text-2xl font-bold text-gray-900 mb-1">🚗 {t('order.status.searching')}</h1>
+              <p className="text-sm text-gray-600">{t('order.waitingForDriver')}</p>
             </div>
             <WaitingBidsPanel
               onAcceptBid={handleAcceptBid}

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useOrder } from '../context/OrderContext';
 import { Bid } from '../types';
 
@@ -9,6 +10,7 @@ interface WaitingBidsPanelProps {
 }
 
 export function WaitingBidsPanel({ onAcceptBid, onDeclineBid, onCancelOrder, isSyncing = false }: WaitingBidsPanelProps) {
+  const { t } = useTranslation();
   const { pickupAddress, destinationAddress, priceEstimate, bids } = useOrder();
 
   return (
@@ -21,13 +23,13 @@ export function WaitingBidsPanel({ onAcceptBid, onDeclineBid, onCancelOrder, isS
             <span className="text-2xl">🚗</span>
           </div>
         </div>
-        <p className="mt-4 text-gray-700 font-medium">Searching for drivers...</p>
-        <p className="text-sm text-gray-500 mt-1">⏱️ Average wait: 2-3 minutes</p>
+        <p className="mt-4 text-gray-700 font-medium">{t('order.searchingDrivers')}</p>
+        <p className="text-sm text-gray-500 mt-1">⏱️ {t('order.averageWait')}</p>
       </div>
 
       {/* Order Summary */}
       <div className="bg-gray-50 rounded-xl p-4 mb-4">
-        <h3 className="text-sm font-semibold text-gray-700 mb-3">Order Summary</h3>
+        <h3 className="text-sm font-semibold text-gray-700 mb-3">{t('order.summary')}</h3>
         <div className="space-y-2 text-sm">
           <div className="flex items-start gap-2">
             <span className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
@@ -42,7 +44,7 @@ export function WaitingBidsPanel({ onAcceptBid, onDeclineBid, onCancelOrder, isS
             <p className="text-gray-600 truncate">{destinationAddress || '-'}</p>
           </div>
           <div className="flex justify-between pt-2 border-t border-gray-200">
-            <span className="text-gray-600">Estimated Fare</span>
+            <span className="text-gray-600">{t('order.estimatedFare')}</span>
             <span className="font-bold text-primary">
               Rp {priceEstimate?.totalPrice.toLocaleString('id-ID') || '0'}
             </span>
@@ -53,9 +55,9 @@ export function WaitingBidsPanel({ onAcceptBid, onDeclineBid, onCancelOrder, isS
       {/* Live Bids Section */}
       <div className="mb-4">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-semibold text-gray-700">Live Bids</h3>
+          <h3 className="text-sm font-semibold text-gray-700">{t('order.liveBids')}</h3>
           <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full font-medium">
-            {bids.length} {bids.length === 1 ? 'bid' : 'bids'}
+            {bids.length} {bids.length === 1 ? t('bid.minutes', { minutes: 'bid' }).replace(' min', '') : t('order.bidsReceived')}
           </span>
         </div>
 
@@ -63,8 +65,8 @@ export function WaitingBidsPanel({ onAcceptBid, onDeclineBid, onCancelOrder, isS
         <div className="space-y-3 max-h-[300px] overflow-y-auto custom-scrollbar">
           {bids.length === 0 ? (
             <div className="text-center py-8 text-gray-500">
-              <p className="text-sm">No bids yet...</p>
-              <p className="text-xs mt-1">Drivers will receive your order shortly</p>
+              <p className="text-sm">{t('order.noBidsYet')}</p>
+              <p className="text-xs mt-1">{t('order.driversWillReceive')}</p>
             </div>
           ) : (
             bids.map((bid) => (
@@ -78,12 +80,12 @@ export function WaitingBidsPanel({ onAcceptBid, onDeclineBid, onCancelOrder, isS
                       {bid.driver_name?.charAt(0) || 'D'}
                     </div>
                     <div>
-                      <h4 className="font-semibold text-gray-900">{bid.driver_name || 'Driver'}</h4>
+                      <h4 className="font-semibold text-gray-900">{bid.driver_name || t('driver.name')}</h4>
                       <div className="flex items-center gap-1 text-xs text-gray-600">
                         <span>⭐</span>
                         <span className="font-medium">{bid.rating || '4.8'}</span>
                         <span>•</span>
-                        <span>{bid.vehicle || 'Toyota Avanza'}</span>
+                        <span>{bid.vehicle || t('vehicle.car')}</span>
                       </div>
                     </div>
                   </div>
@@ -91,7 +93,7 @@ export function WaitingBidsPanel({ onAcceptBid, onDeclineBid, onCancelOrder, isS
                     <p className="text-lg font-bold text-primary">
                       Rp {bid.bid_price?.toLocaleString('id-ID') || '0'}
                     </p>
-                    <p className="text-xs text-gray-500">{bid.eta_minutes || '5'} min away</p>
+                    <p className="text-xs text-gray-500">{bid.eta_minutes || '5'} {t('driver.away')}</p>
                   </div>
                 </div>
                 <div className="flex gap-2">
@@ -99,13 +101,13 @@ export function WaitingBidsPanel({ onAcceptBid, onDeclineBid, onCancelOrder, isS
                     onClick={() => onAcceptBid(bid)}
                     className="flex-1 py-2 bg-primary text-white text-sm font-semibold rounded-lg hover:bg-primary-dark transition-all"
                   >
-                    Accept
+                    {t('order.acceptBid')}
                   </button>
                   <button
                     onClick={() => onDeclineBid(bid)}
                     className="flex-1 py-2 border border-gray-300 text-gray-700 text-sm font-semibold rounded-lg hover:bg-gray-50 transition-all"
                   >
-                    Decline
+                    {t('order.declineBid')}
                   </button>
                 </div>
               </div>
@@ -121,7 +123,7 @@ export function WaitingBidsPanel({ onAcceptBid, onDeclineBid, onCancelOrder, isS
         disabled={isSyncing}
         className="w-full py-3 border-2 border-red-500 text-red-500 font-semibold rounded-xl hover:bg-red-50 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {isSyncing ? 'Loading Order...' : 'Cancel Order'}
+        {isSyncing ? t('order.loadingOrder') : t('order.cancelOrder')}
       </button>
     </div>
   );

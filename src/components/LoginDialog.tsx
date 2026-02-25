@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { authService } from '../services/authService';
 
 interface LoginDialogProps {
@@ -6,6 +7,7 @@ interface LoginDialogProps {
 }
 
 export function LoginDialog({ onLoginSuccess }: LoginDialogProps) {
+  const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -43,16 +45,16 @@ export function LoginDialog({ onLoginSuccess }: LoginDialogProps) {
 
         {/* Title */}
         <h1 className="text-2xl font-bold text-gray-900 text-center mb-2">
-          Welcome to Jetlink
+          {t('login.title')}
         </h1>
         <p className="text-gray-600 text-center mb-8">
-          Sign in to book your ride
+          {t('login.subtitle')}
         </p>
 
         {/* Error Message */}
         {error && (
           <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl">
-            <p className="text-sm text-red-600 text-center">{error}</p>
+            <p className="text-sm text-red-600 text-center">{t('login.signInError')}</p>
           </div>
         )}
 
@@ -87,28 +89,28 @@ export function LoginDialog({ onLoginSuccess }: LoginDialogProps) {
               />
             </svg>
           )}
-          <span>{isLoading ? 'Signing in...' : 'Sign in with Google'}</span>
+          <span>{isLoading ? t('login.signingIn') : t('login.signInWithGoogle')}</span>
         </button>
 
         {/* Terms */}
         <p className="text-xs text-gray-500 text-center mt-6">
-          By signing in, you agree to our{' '}
+          {t('login.termsText')}{' '}
           <a
             href="/terms-of-service.html"
             target="_blank"
             rel="noopener noreferrer"
             className="text-green-600 hover:text-green-700 hover:underline font-medium transition-colors"
           >
-            Terms of Service
+            {t('login.termsLink')}
           </a>
-          {' '}and{' '}
+          {' '}{t('login.and')}{' '}
           <a
             href="/privacy-policy.html"
             target="_blank"
             rel="noopener noreferrer"
             className="text-green-600 hover:text-green-700 hover:underline font-medium transition-colors"
           >
-            Privacy Policy
+            {t('login.privacyLink')}
           </a>
         </p>
       </div>
