@@ -4,11 +4,14 @@ import './index.css'
 import App from './App.tsx'
 import './i18n/config'
 import { LanguageProvider } from './context/LanguageContext'
+import { DarkModeProvider } from './context/DarkModeContext'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <LanguageProvider>
-      <App />
-    </LanguageProvider>
+    <DarkModeProvider>
+      <LanguageProvider>
+        <App />
+      </LanguageProvider>
+    </DarkModeProvider>
   </StrictMode>,
 )

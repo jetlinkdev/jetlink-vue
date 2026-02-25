@@ -178,5 +178,12 @@
     "english": "Basa Inggris",
     "indonesian": "Basa Indonesia",
     "javanese": "Basa Jawa"
+  },
+  "settings": {
+    "darkMode": "Mode Peteng",
+    "lightMode": "Mode Terang",
+    "legal": "Legal & Kebijakan",
+    "profile": "Pengaturan Profil",
+    "preferences": "Preferensi"
   }
 }
