@@ -12,7 +12,6 @@ import { MapLegend } from './components/MapLegend';
 import { LoginDialog } from './components/LoginDialog';
 import { ProfileCompletionDialog } from './components/ProfileCompletionDialog';
 import { RatingDialog } from './components/RatingDialog';
-import { LanguageSelector } from './components/LanguageSelector';
 import { UserProfileDialog } from './components/UserProfileDialog';
 import { Bid, WebSocketMessage, OrderState, ReviewData } from './types';
 import { DEFAULT_LOCATION, MAP_CONFIG } from './config/constants';
@@ -509,49 +508,27 @@ function AppContent() {
             <div className="p-6 pb-4 border-b border-gray-200">
               <div className="flex justify-between items-center mb-1">
                 <h1 className="text-2xl font-bold text-gray-900">🚗 {t('booking.title')}</h1>
-                <div className="flex items-center gap-2">
-                  <LanguageSelector />
-                  {user && (
-                    <button
-                      onClick={() => setShowUserProfileDialog(true)}
-                      className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors"
-                      title={t('settings.profile')}
-                    >
-                      {user.photoURL ? (
-                        <img
-                          src={user.photoURL}
-                          alt={user.displayName || 'User'}
-                          className="w-6 h-6 rounded-full"
-                        />
-                      ) : (
-                        <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
-                          {(user.displayName || user.email || 'U').charAt(0).toUpperCase()}
-                        </div>
-                      )}
-                      <span className="text-sm text-gray-700 truncate max-w-[100px]">
-                        {user.displayName || user.email?.split('@')[0]}
-                      </span>
-                    </button>
-                  )}
-                </div>
-              </div>
-              <div className="flex justify-between items-center">
-                <p className="text-sm text-gray-600">{t('booking.subtitle')}</p>
                 {user && (
-                  <div className="flex items-center gap-2">
-                    {user.photoURL && (
+                  <button
+                    onClick={() => setShowUserProfileDialog(true)}
+                    className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors"
+                    title={t('settings.profile')}
+                  >
+                    {user.photoURL ? (
                       <img
                         src={user.photoURL}
                         alt={user.displayName || 'User'}
-                        className="w-6 h-6 rounded-full"
+                        className="w-8 h-8 rounded-full"
                       />
+                    ) : (
+                      <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-white text-sm font-bold">
+                        {(user.displayName || user.email || 'U').charAt(0).toUpperCase()}
+                      </div>
                     )}
-                    <span className="text-xs text-gray-500 truncate max-w-[150px]">
-                      {user.displayName || user.email}
-                    </span>
-                  </div>
+                  </button>
                 )}
               </div>
+              <p className="text-sm text-gray-600">{t('booking.subtitle')}</p>
             </div>
             <BookingPanel
               onSubmit={handleSubmitOrder}
