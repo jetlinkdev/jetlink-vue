@@ -49,7 +49,6 @@ function AppContent() {
     createOrderMessage,
     cancelOrderMessage,
     acceptBidMessage,
-    declineBidMessage,
     removeBid,
     pickupLocation,
     destinationLocation,
