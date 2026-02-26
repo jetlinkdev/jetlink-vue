@@ -15,39 +15,39 @@ export function DriverAssignedPanel({ onBackToHome }: DriverAssignedPanelProps) 
 
   return (
     <div className="p-6">
-      <div className="p-6 pb-4 -m-6 mb-4 border-b border-gray-200">
-        <h1 className="text-2xl font-bold text-gray-900 mb-1">✅ {t('order.driverFound')}</h1>
-        <p className="text-sm text-gray-600">{t('order.driverOnWay')}</p>
+      <div className="p-6 pb-4 -m-6 mb-4 border-b border-gray-200 dark:border-gray-700">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">✅ {t('order.driverFound')}</h1>
+        <p className="text-sm text-gray-600 dark:text-gray-400">{t('order.driverOnWay')}</p>
       </div>
 
-      <div className="bg-gradient-to-r from-primary/10 to-primary/5 rounded-xl p-6 mb-4">
+      <div className="bg-gradient-to-r from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/10 rounded-xl p-6 mb-4">
         <div className="flex items-center gap-4 mb-4">
           <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center text-white text-2xl font-bold">
             {assignedDriver.driver_name?.charAt(0) || 'D'}
           </div>
           <div>
-            <h3 className="text-lg font-bold text-gray-900">{assignedDriver.driver_name || t('driver.name')}</h3>
-            <div className="flex items-center gap-1 text-sm text-gray-600">
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white">{assignedDriver.driver_name || t('driver.name')}</h3>
+            <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400">
               <span>⭐</span>
               <span className="font-medium">{assignedDriver.rating || '4.8'}</span>
             </div>
           </div>
         </div>
         <div className="grid grid-cols-2 gap-3 text-sm">
-          <div className="bg-white/50 rounded-lg p-2">
-            <p className="text-gray-500 text-xs">{t('driver.vehicle')}</p>
-            <p className="font-medium text-gray-900">{assignedDriver.vehicle || t('vehicle.car')}</p>
+          <div className="bg-white/50 dark:bg-gray-800/50 rounded-lg p-2">
+            <p className="text-gray-500 dark:text-gray-400 text-xs">{t('driver.vehicle')}</p>
+            <p className="font-medium text-gray-900 dark:text-white">{assignedDriver.vehicle || t('vehicle.car')}</p>
           </div>
-          <div className="bg-white/50 rounded-lg p-2">
-            <p className="text-gray-500 text-xs">{t('driver.plateNumber')}</p>
-            <p className="font-medium text-gray-900">{assignedDriver.plate_number || 'B 1234 XYZ'}</p>
+          <div className="bg-white/50 dark:bg-gray-800/50 rounded-lg p-2">
+            <p className="text-gray-500 dark:text-gray-400 text-xs">{t('driver.plateNumber')}</p>
+            <p className="font-medium text-gray-900 dark:text-white">{assignedDriver.plate_number || 'B 1234 XYZ'}</p>
           </div>
-          <div className="bg-white/50 rounded-lg p-2">
-            <p className="text-gray-500 text-xs">ETA</p>
-            <p className="font-medium text-gray-900">{assignedDriver.eta_minutes || '5'} {t('driver.away')}</p>
+          <div className="bg-white/50 dark:bg-gray-800/50 rounded-lg p-2">
+            <p className="text-gray-500 dark:text-gray-400 text-xs">ETA</p>
+            <p className="font-medium text-gray-900 dark:text-white">{assignedDriver.eta_minutes || '5'} {t('driver.away')}</p>
           </div>
-          <div className="bg-white/50 rounded-lg p-2">
-            <p className="text-gray-500 text-xs">{t('bid.price')}</p>
+          <div className="bg-white/50 dark:bg-gray-800/50 rounded-lg p-2">
+            <p className="text-gray-500 dark:text-gray-400 text-xs">{t('bid.price')}</p>
             <p className="font-medium text-primary">
               Rp {assignedDriver.bid_price?.toLocaleString('id-ID') || '0'}
             </p>
@@ -55,20 +55,20 @@ export function DriverAssignedPanel({ onBackToHome }: DriverAssignedPanelProps) 
         </div>
       </div>
 
-      <div className="bg-gray-50 rounded-xl p-4 mb-4">
-        <h4 className="text-sm font-semibold text-gray-700 mb-2">{t('order.tripDetails')}</h4>
+      <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 mb-4">
+        <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">{t('order.tripDetails')}</h4>
         <div className="space-y-2 text-sm">
           <div className="flex items-start gap-2">
             <span className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
               A
             </span>
-            <p className="text-gray-600 truncate">{pickupAddress}</p>
+            <p className="text-gray-600 dark:text-gray-400 truncate">{pickupAddress}</p>
           </div>
           <div className="flex items-start gap-2">
             <span className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
               B
             </span>
-            <p className="text-gray-600 truncate">{destinationAddress}</p>
+            <p className="text-gray-600 dark:text-gray-400 truncate">{destinationAddress}</p>
           </div>
         </div>
       </div>
@@ -76,7 +76,7 @@ export function DriverAssignedPanel({ onBackToHome }: DriverAssignedPanelProps) 
       <button
         type="button"
         onClick={onBackToHome}
-        className="w-full py-3 bg-gray-100 text-gray-700 font-semibold rounded-xl hover:bg-gray-200 transition-all duration-300"
+        className="w-full py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-300"
       >
         {t('order.backToHome')}
       </button>

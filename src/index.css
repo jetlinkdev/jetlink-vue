@@ -30,12 +30,17 @@
   @apply bg-gray-500 dark:bg-gray-400;
 }
 
+/* Location suggestions dropdown */
+.location-suggestions {
+  @apply bg-white dark:bg-gray-800;
+}
+
 .location-suggestions.active {
   display: block;
 }
 
 .suggestion-item:hover {
-  background: #f5f5f5;
+  @apply bg-gray-100 dark:bg-gray-700;
 }
 
 .suggestion-item:first-child {
@@ -79,6 +84,17 @@
     opacity: 1;
     transform: scale(1);
   }
+}
+
+/* Input dark mode support */
+.pickup-input,
+.destination-input {
+  @apply bg-white dark:bg-gray-800 text-gray-900 dark:text-white;
+}
+
+.pickup-input::placeholder,
+.destination-input::placeholder {
+  @apply text-gray-400 dark:text-gray-500;
 }
 
 @media (max-width: 768px) {

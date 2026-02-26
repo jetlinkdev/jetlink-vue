@@ -49,7 +49,7 @@ export function ProfileCompletionDialog({ onComplete }: ProfileCompletionDialogP
 
   return (
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[3000] animate-[fadeIn_0.3s_ease-out]">
-      <div className="bg-white rounded-3xl p-8 max-w-md w-full mx-4 shadow-2xl animate-[slideIn_0.3s_ease-out]">
+      <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 max-w-md w-full mx-4 shadow-2xl animate-[slideIn_0.3s_ease-out]">
         {/* Header */}
         <div className="flex justify-center mb-6">
           <div className="w-20 h-20 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center shadow-lg">
@@ -71,17 +71,17 @@ export function ProfileCompletionDialog({ onComplete }: ProfileCompletionDialogP
         </div>
 
         {/* Title */}
-        <h1 className="text-2xl font-bold text-gray-900 text-center mb-2">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white text-center mb-2">
           {t('profile.title')}
         </h1>
-        <p className="text-gray-600 text-center mb-6">
+        <p className="text-gray-600 dark:text-gray-400 text-center mb-6">
           {t('profile.subtitle')}
         </p>
 
         {/* Error Message */}
         {error && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl">
-            <p className="text-sm text-red-600 text-center">{t('profile.error')}</p>
+          <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl">
+            <p className="text-sm text-red-600 dark:text-red-400 text-center">{t('profile.error')}</p>
           </div>
         )}
 
@@ -89,7 +89,7 @@ export function ProfileCompletionDialog({ onComplete }: ProfileCompletionDialogP
         <form onSubmit={handleSubmit}>
           {/* Display Name */}
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               {t('profile.nameLabel')} *
             </label>
             <input
@@ -98,13 +98,13 @@ export function ProfileCompletionDialog({ onComplete }: ProfileCompletionDialogP
               onChange={(e) => setDisplayName(e.target.value)}
               placeholder={t('profile.namePlaceholder')}
               required
-              className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-blue-500 transition-colors"
+              className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 transition-colors bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             />
           </div>
 
           {/* Email */}
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               {t('profile.emailLabel')} *
             </label>
             <input
@@ -113,13 +113,13 @@ export function ProfileCompletionDialog({ onComplete }: ProfileCompletionDialogP
               onChange={(e) => setEmail(e.target.value)}
               placeholder={t('profile.emailPlaceholder')}
               required
-              className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-blue-500 transition-colors"
+              className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 transition-colors bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             />
           </div>
 
           {/* Phone Number */}
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               {t('profile.phoneLabel')}
             </label>
             <input
@@ -127,7 +127,7 @@ export function ProfileCompletionDialog({ onComplete }: ProfileCompletionDialogP
               value={phoneNumber}
               onChange={(e) => setPhoneNumber(e.target.value)}
               placeholder={t('profile.phonePlaceholder')}
-              className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-blue-500 transition-colors"
+              className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 transition-colors bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             />
           </div>
 
@@ -142,11 +142,11 @@ export function ProfileCompletionDialog({ onComplete }: ProfileCompletionDialogP
         </form>
 
         {/* Terms */}
-        <p className="text-xs text-gray-500 text-center mt-6">
+        <p className="text-xs text-gray-500 dark:text-gray-400 text-center mt-6">
           {t('login.termsText')}{' '}
-          <a href="#" className="text-blue-600 hover:underline">{t('login.termsLink')}</a>
+          <a href="#" className="text-blue-600 dark:text-blue-400 hover:underline">{t('login.termsLink')}</a>
           {' '}{t('login.and')}{' '}
-          <a href="#" className="text-blue-600 hover:underline">{t('login.privacyLink')}</a>
+          <a href="#" className="text-blue-600 dark:text-blue-400 hover:underline">{t('login.privacyLink')}</a>
         </p>
       </div>
     </div>

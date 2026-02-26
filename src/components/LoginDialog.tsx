@@ -33,7 +33,7 @@ export function LoginDialog({ onLoginSuccess }: LoginDialogProps) {
 
   return (
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[3000] animate-[fadeIn_0.3s_ease-out]">
-      <div className="bg-white rounded-3xl p-8 max-w-md w-full mx-4 shadow-2xl animate-[slideIn_0.3s_ease-out]">
+      <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 max-w-md w-full mx-4 shadow-2xl animate-[slideIn_0.3s_ease-out]">
         {/* App Logo */}
         <div className="flex justify-center mb-6">
           <img
@@ -44,17 +44,17 @@ export function LoginDialog({ onLoginSuccess }: LoginDialogProps) {
         </div>
 
         {/* Title */}
-        <h1 className="text-2xl font-bold text-gray-900 text-center mb-2">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white text-center mb-2">
           {t('login.title')}
         </h1>
-        <p className="text-gray-600 text-center mb-8">
+        <p className="text-gray-600 dark:text-gray-400 text-center mb-8">
           {t('login.subtitle')}
         </p>
 
         {/* Error Message */}
         {error && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl">
-            <p className="text-sm text-red-600 text-center">{t('login.signInError')}</p>
+          <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl">
+            <p className="text-sm text-red-600 dark:text-red-400 text-center">{t('login.signInError')}</p>
           </div>
         )}
 
@@ -62,10 +62,10 @@ export function LoginDialog({ onLoginSuccess }: LoginDialogProps) {
         <button
           onClick={handleGoogleSignIn}
           disabled={isLoading}
-          className="w-full flex items-center justify-center gap-3 bg-white border-2 border-gray-300 hover:border-gray-400 text-gray-700 font-semibold py-4 px-6 rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow-md"
+          className="w-full flex items-center justify-center gap-3 bg-white dark:bg-gray-700 border-2 border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 text-gray-700 dark:text-gray-200 font-semibold py-4 px-6 rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow-md"
         >
           {isLoading ? (
-            <svg className="animate-spin h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <svg className="animate-spin h-5 w-5 text-gray-500 dark:text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
@@ -93,13 +93,13 @@ export function LoginDialog({ onLoginSuccess }: LoginDialogProps) {
         </button>
 
         {/* Terms */}
-        <p className="text-xs text-gray-500 text-center mt-6">
+        <p className="text-xs text-gray-500 dark:text-gray-400 text-center mt-6">
           {t('login.termsText')}{' '}
           <a
             href="/terms-of-service.html"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-green-600 hover:text-green-700 hover:underline font-medium transition-colors"
+            className="text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 hover:underline font-medium transition-colors"
           >
             {t('login.termsLink')}
           </a>
@@ -108,7 +108,7 @@ export function LoginDialog({ onLoginSuccess }: LoginDialogProps) {
             href="/privacy-policy.html"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-green-600 hover:text-green-700 hover:underline font-medium transition-colors"
+            className="text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 hover:underline font-medium transition-colors"
           >
             {t('login.privacyLink')}
           </a>

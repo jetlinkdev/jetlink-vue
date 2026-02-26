@@ -173,7 +173,7 @@ export function BookingPanel({ onSubmit, isSubmitting, getCurrentLocation, isGet
         <div className="mb-5">
           <label
             htmlFor="pickupLocation"
-            className="block text-xs font-semibold text-gray-700 mb-2 uppercase tracking-wide"
+            className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2 uppercase tracking-wide"
           >
             {t('booking.pickupLabel')}
           </label>
@@ -199,13 +199,13 @@ export function BookingPanel({ onSubmit, isSubmitting, getCurrentLocation, isGet
               readOnly
               required
               autoComplete="off"
-              className={`w-full pl-11 pr-12 py-3 text-sm border-2 ${getPickupBorderClass()} rounded-xl focus:outline-none transition-all pickup-input`}
+              className={`w-full pl-11 pr-12 py-3 text-sm border-2 ${getPickupBorderClass()} rounded-xl focus:outline-none transition-all pickup-input text-gray-900 dark:text-white bg-white dark:bg-gray-800`}
             />
             <button
               type="button"
               onClick={getCurrentLocation}
               disabled={isGettingLocation}
-              className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-gray-500 hover:text-primary transition-colors"
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors"
               title={t('booking.useCurrentLocation')}
             >
               <svg
@@ -232,12 +232,12 @@ export function BookingPanel({ onSubmit, isSubmitting, getCurrentLocation, isGet
             {showPickupSuggestions && (
               <div
                 ref={pickupSuggestionsRef}
-                className="location-suggestions absolute top-full left-0 right-0 bg-white border border-gray-300 rounded-lg shadow-lg z-[1001] max-h-[200px] overflow-y-auto"
+                className="location-suggestions absolute top-full left-0 right-0 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg z-[1001] max-h-[200px] overflow-y-auto"
               >
                 {pickupSuggestions.map((suggestion, index) => (
                   <div
                     key={`${suggestion.lat}-${suggestion.lon}-${index}`}
-                    className="p-2.5 cursor-pointer hover:bg-gray-100 transition-colors"
+                    className="p-2.5 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-gray-900 dark:text-gray-100"
                     onClick={() => handlePickupSelect(suggestion)}
                   >
                     {suggestion.display_name}
@@ -251,7 +251,7 @@ export function BookingPanel({ onSubmit, isSubmitting, getCurrentLocation, isGet
         <div className="mb-5">
           <label
             htmlFor="destination"
-            className="block text-xs font-semibold text-gray-700 mb-2 uppercase tracking-wide"
+            className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2 uppercase tracking-wide"
           >
             {t('booking.destinationLabel')}
           </label>
@@ -277,17 +277,17 @@ export function BookingPanel({ onSubmit, isSubmitting, getCurrentLocation, isGet
               readOnly
               required
               autoComplete="off"
-              className={`w-full pl-11 pr-4 py-3 text-sm border-2 ${getDestinationBorderClass()} rounded-xl focus:outline-none transition-all destination-input`}
+              className={`w-full pl-11 pr-4 py-3 text-sm border-2 ${getDestinationBorderClass()} rounded-xl focus:outline-none transition-all destination-input text-gray-900 dark:text-white bg-white dark:bg-gray-800`}
             />
             {showDestinationSuggestions && (
               <div
                 ref={destinationSuggestionsRef}
-                className="location-suggestions absolute top-full left-0 right-0 bg-white border border-gray-300 rounded-lg shadow-lg z-[1001] max-h-[200px] overflow-y-auto"
+                className="location-suggestions absolute top-full left-0 right-0 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg z-[1001] max-h-[200px] overflow-y-auto"
               >
                 {destinationSuggestions.map((suggestion, index) => (
                   <div
                     key={`${suggestion.lat}-${suggestion.lon}-${index}`}
-                    className="p-2.5 cursor-pointer hover:bg-gray-100 transition-colors"
+                    className="p-2.5 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-gray-900 dark:text-gray-100"
                     onClick={() => handleDestinationSelect(suggestion)}
                   >
                     {suggestion.display_name}
@@ -310,17 +310,17 @@ export function BookingPanel({ onSubmit, isSubmitting, getCurrentLocation, isGet
             // Display mode: show "Segera" or selected time with edit button
             <div className="relative">
               <div
-                className="w-full px-4 py-3 text-sm border-2 border-gray-300 rounded-xl bg-gray-50 cursor-pointer hover:border-primary transition-all flex items-center justify-between"
+                className="w-full px-4 py-3 text-sm border-2 border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 cursor-pointer hover:border-primary transition-all flex items-center justify-between"
                 onClick={() => {
                   setShowTimeInput(true);
                   // Focus the time input after a short delay
                   setTimeout(() => timeInputRef.current?.focus(), 50);
                 }}
               >
-                <span className="text-gray-700">{getPickupTimeLabel()}</span>
+                <span className="text-gray-700 dark:text-gray-300">{getPickupTimeLabel()}</span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 text-gray-400 hover:text-primary transition-colors"
+                  className="h-5 w-5 text-gray-400 dark:text-gray-500 hover:text-primary transition-colors"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -355,7 +355,7 @@ export function BookingPanel({ onSubmit, isSubmitting, getCurrentLocation, isGet
                   setPickupTime(newValue);
                 }}
                 min={getMinPickupTime()}
-                className="w-full px-4 py-3 text-sm border-2 border-primary rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all text-gray-700 pr-12"
+                className="w-full px-4 py-3 text-sm border-2 border-primary rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all text-gray-700 dark:text-white bg-white dark:bg-gray-800 pr-12"
               />
               <button
                 type="button"
@@ -394,7 +394,7 @@ export function BookingPanel({ onSubmit, isSubmitting, getCurrentLocation, isGet
         <div className="mb-5">
           <label
             htmlFor="notes"
-            className="block text-xs font-semibold text-gray-700 mb-2 uppercase tracking-wide"
+            className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2 uppercase tracking-wide"
           >
             {t('booking.notesLabel')}
           </label>
@@ -404,12 +404,12 @@ export function BookingPanel({ onSubmit, isSubmitting, getCurrentLocation, isGet
             onChange={(e) => setNotes(e.target.value)}
             placeholder={t('booking.notesPlaceholder')}
             rows={3}
-            className="w-full px-4 py-3 text-sm border-2 border-gray-300 rounded-xl focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all resize-y min-h-[80px]"
+            className="w-full px-4 py-3 text-sm border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all resize-y min-h-[80px] bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
           />
         </div>
 
         <div className="mb-5">
-          <label className="block text-xs font-semibold text-gray-700 mb-2 uppercase tracking-wide">
+          <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2 uppercase tracking-wide">
             {t('booking.paymentMethodLabel')}
           </label>
           <RadioGroup
@@ -422,12 +422,12 @@ export function BookingPanel({ onSubmit, isSubmitting, getCurrentLocation, isGet
                 <div
                   className={`relative flex flex-col items-center p-4 rounded-xl border-2 cursor-pointer transition-all ${
                     checked
-                      ? 'border-primary bg-primary/5'
-                      : 'border-gray-300 hover:border-primary/50'
+                      ? 'border-primary bg-primary/5 dark:bg-primary/20'
+                      : 'border-gray-300 dark:border-gray-600 hover:border-primary/50'
                   }`}
                 >
                   <div className="text-2xl mb-2">💵</div>
-                  <div className="text-sm font-semibold text-gray-700">{t('booking.paymentCash')}</div>
+                  <div className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('booking.paymentCash')}</div>
                   {checked && (
                     <div className="absolute top-2 right-2 w-5 h-5 bg-primary rounded-full flex items-center justify-center">
                       <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -444,12 +444,12 @@ export function BookingPanel({ onSubmit, isSubmitting, getCurrentLocation, isGet
                 <div
                   className={`relative flex flex-col items-center p-4 rounded-xl border-2 cursor-pointer transition-all ${
                     checked
-                      ? 'border-primary bg-primary/5'
-                      : 'border-gray-300 hover:border-primary/50'
+                      ? 'border-primary bg-primary/5 dark:bg-primary/20'
+                      : 'border-gray-300 dark:border-gray-600 hover:border-primary/50'
                   }`}
                 >
                   <div className="text-2xl mb-2">📱</div>
-                  <div className="text-sm font-semibold text-gray-700">{t('booking.paymentQris')}</div>
+                  <div className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('booking.paymentQris')}</div>
                   {checked && (
                     <div className="absolute top-2 right-2 w-5 h-5 bg-primary rounded-full flex items-center justify-center">
                       <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -464,17 +464,17 @@ export function BookingPanel({ onSubmit, isSubmitting, getCurrentLocation, isGet
         </div>
 
         {priceEstimate && (
-          <div className="distance-info bg-gray-100 p-4 rounded-xl mb-5">
+          <div className="distance-info bg-gray-100 dark:bg-gray-700 p-4 rounded-xl mb-5">
             <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">{t('booking.distanceLabel')}</span>
-              <span className="text-lg font-semibold text-gray-900">
+              <span className="text-sm text-gray-600 dark:text-gray-400">{t('booking.distanceLabel')}</span>
+              <span className="text-lg font-semibold text-gray-900 dark:text-white">
                 {priceEstimate.distance.toFixed(2)} km
               </span>
             </div>
           </div>
         )}
 
-        <div className="fixed bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-white via-white to-transparent md:static md:bg-none md:p-0">
+        <div className="fixed bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-white dark:from-gray-900 via-white dark:via-gray-900 to-transparent md:static md:bg-none md:p-0">
           <button
             type="submit"
             disabled={isSubmitting || !pickupLocation || !destinationLocation}
