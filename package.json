@@ -18,8 +18,7 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-i18next": "^16.5.4",
-    "react-leaflet": "^4.2.1",
-    "react-time-picker": "^8.0.2"
+    "react-leaflet": "^4.2.1"
   },
   "devDependencies": {
     "@types/leaflet": "^1.9.8",
