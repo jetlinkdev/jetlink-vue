@@ -56,7 +56,13 @@
     "cancelYes": "Yes, Cancel",
     "cancelNo": "No, Keep",
     "useCurrentLocation": "Use current location",
-    "locationFound": "Location found!"
+    "locationFound": "Location found!",
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "selectTime": "Select time",
+    "todayTimeInfo": "Time must be at least 10 minutes from now",
+    "tomorrowTimeInfo": "Tomorrow - any time is allowed",
+    "selectDateInfo": "Select Today or Tomorrow, then choose the time"
   },
   "vehicle": {
     "car": "Car",

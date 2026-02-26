@@ -56,7 +56,13 @@
     "cancelYes": "Ya, Batalkan",
     "cancelNo": "Tidak, Pertahankan",
     "useCurrentLocation": "Gunakan lokasi saat ini",
-    "locationFound": "Lokasi ditemukan!"
+    "locationFound": "Lokasi ditemukan!",
+    "today": "Hari Ini",
+    "tomorrow": "Besok",
+    "selectTime": "Pilih waktu",
+    "todayTimeInfo": "Waktu harus minimal 10 menit dari sekarang",
+    "tomorrowTimeInfo": "Besok - boleh pilih waktu kapan saja",
+    "selectDateInfo": "Pilih Hari Ini atau Besok, lalu tentukan waktunya"
   },
   "vehicle": {
     "car": "Mobil",

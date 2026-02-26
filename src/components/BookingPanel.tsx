@@ -427,7 +427,7 @@ export function BookingPanel({ onSubmit, isSubmitting, getCurrentLocation, isGet
                       : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:border-primary'
                   }`}
                 >
-                  📅 Hari Ini
+                  📅 {t('booking.today')}
                 </button>
                 <button
                   type="button"
@@ -438,7 +438,7 @@ export function BookingPanel({ onSubmit, isSubmitting, getCurrentLocation, isGet
                       : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:border-primary'
                   }`}
                 >
-                  📅 Besok
+                  📅 {t('booking.tomorrow')}
                 </button>
               </div>
 
@@ -455,7 +455,7 @@ export function BookingPanel({ onSubmit, isSubmitting, getCurrentLocation, isGet
                   }}
                   min={selectedDate === 'today' ? getMinTimeForToday() : undefined}
                   className="w-full px-4 py-3 text-sm border-2 border-primary rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all text-gray-700 dark:text-white bg-white dark:bg-gray-800 pr-12"
-                  placeholder="Pilih waktu"
+                  placeholder={t('booking.selectTime')}
                 />
                 <button
                   type="button"
@@ -488,13 +488,13 @@ export function BookingPanel({ onSubmit, isSubmitting, getCurrentLocation, isGet
               {/* Info text */}
               <p className="text-xs text-gray-500 dark:text-gray-400">
                 {selectedDate === 'today' && (
-                  <span>⏰ Waktu harus minimal 10 menit dari sekarang</span>
+                  <span>⏰ {t('booking.todayTimeInfo')}</span>
                 )}
                 {selectedDate === 'tomorrow' && (
-                  <span>📆 Besok - boleh pilih waktu kapan saja</span>
+                  <span>📆 {t('booking.tomorrowTimeInfo')}</span>
                 )}
                 {!selectedDate && (
-                  <span>👆 Pilih Hari Ini atau Besok, lalu tentukan waktunya</span>
+                  <span>👆 {t('booking.selectDateInfo')}</span>
                 )}
               </p>
             </div>

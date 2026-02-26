@@ -56,7 +56,13 @@
     "cancelYes": "Ya, Batalake",
     "cancelNo": "Ora, Pertahanke",
     "useCurrentLocation": "Gunakake lokasi saiki",
-    "locationFound": "Lokasi ditemokake!"
+    "locationFound": "Lokasi ditemokake!",
+    "today": "Dina Iki",
+    "tomorrow": " sesuk",
+    "selectTime": "Pilih wektu",
+    "todayTimeInfo": "Wektu kudu minimal 10 menit maneh saiki",
+    "tomorrowTimeInfo": " sesuk - bebas pilih wektu kapan wae",
+    "selectDateInfo": "Pilih Dina Iki utawa sesuk, banjur tentukan wektune"
   },
   "vehicle": {
     "car": "Mobil",
