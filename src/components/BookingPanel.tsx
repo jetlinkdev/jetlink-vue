@@ -4,6 +4,9 @@ import { useOrder } from '../context/OrderContext';
 import { Suggestion } from '../types';
 import { NOMINATIM_URL } from '../config/constants';
 import { RadioGroup } from '@headlessui/react';
+import TimePicker from 'react-time-picker';
+import 'react-time-picker/dist/TimePicker.css';
+import 'react-clock/dist/Clock.css';
 
 interface BookingPanelProps {
   onSubmit: () => void;
@@ -442,21 +445,29 @@ export function BookingPanel({ onSubmit, isSubmitting, getCurrentLocation, isGet
                 </button>
               </div>
 
-              {/* Time Picker */}
+              {/* Time Picker with react-time-picker */}
               <div className="relative">
-                <input
-                  ref={timeInputRef}
-                  type="time"
-                  id="pickupTime"
-                  value={selectedTime}
-                  onChange={(e) => {
-                    const dateType = selectedDate || 'today';
-                    handleTimeChange(dateType, e.target.value);
-                  }}
-                  min={selectedDate === 'today' ? getMinTimeForToday() : undefined}
-                  className="w-full px-4 py-3 text-sm border-2 border-primary rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all text-gray-700 dark:text-white bg-white dark:bg-gray-800 pr-12"
-                  placeholder="Pilih waktu"
-                />
+                <div className="react-time-picker-wrapper">
+                  <TimePicker
+                    onChange={(value) => {
+                      if (value) {
+                        const dateType = selectedDate || 'today';
+                        const timeString = value.toLocaleTimeString('en-GB', { 
+                          hour: '2-digit', 
+                          minute: '2-digit',
+                          hour12: false 
+                        });
+                        handleTimeChange(dateType, timeString);
+                      }
+                    }}
+                    value={selectedTime ? new Date(`2000-01-01T${selectedTime}:00`) : null}
+                    clearIcon={null}
+                    clockIcon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}
+                    className="react-time-picker-custom"
+                    format="HH:mm"
+                    disableClock={false}
+                  />
+                </div>
                 <button
                   type="button"
                   onClick={() => {
