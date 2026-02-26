@@ -45,6 +45,8 @@ export function BookingPanel({ onSubmit, isSubmitting, getCurrentLocation, isGet
   const [pickupInputValue, setPickupInputValue] = useState('');
   const [destinationInputValue, setDestinationInputValue] = useState('');
   const [showTimeInput, setShowTimeInput] = useState(false); // Control visibility of time input
+  const [selectedDate, setSelectedDate] = useState<'today' | 'tomorrow' | null>(null); // Date selection
+  const [selectedTime, setSelectedTime] = useState<string>(''); // Time selection (HH:mm)
 
   const pickupInputRef = useRef<HTMLInputElement>(null);
   const destinationInputRef = useRef<HTMLInputElement>(null);
@@ -142,6 +144,83 @@ export function BookingPanel({ onSubmit, isSubmitting, getCurrentLocation, isGet
     setDestinationInputValue(suggestion.display_name);
     setShowDestinationSuggestions(false);
     // The actual location setting is handled by the parent via map click
+  };
+
+  // Get minimum time string (HH:mm) for today (10 minutes from now)
+  const getMinTimeForToday = (): string => {
+    const now = new Date();
+    now.setMinutes(now.getMinutes() + 10);
+    return `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+  };
+
+  // Get minimum datetime string for datetime-local input
+  const getMinDateTimeLocal = (): string => {
+    const now = new Date();
+    now.setMinutes(now.getMinutes() + 10);
+    const year = now.getFullYear();
+    const month = (now.getMonth() + 1).toString().padStart(2, '0');
+    const day = now.getDate().toString().padStart(2, '0');
+    const hours = now.getHours().toString().padStart(2, '0');
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  };
+
+  // Get today's date in YYYY-MM-DD format
+  const getTodayDate = (): string => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = (today.getMonth() + 1).toString().padStart(2, '0');
+    const day = today.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  // Get tomorrow's date in YYYY-MM-DD format
+  const getTomorrowDate = (): string => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const year = tomorrow.getFullYear();
+    const month = (tomorrow.getMonth() + 1).toString().padStart(2, '0');
+    const day = tomorrow.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  // Handle time change with validation
+  const handleTimeChange = (dateType: 'today' | 'tomorrow', timeValue: string) => {
+    setSelectedDate(dateType);
+    setSelectedTime(timeValue);
+
+    if (!timeValue) {
+      // If time is cleared, set to Segera
+      setPickupTime(null);
+      return;
+    }
+
+    const now = new Date();
+    const [hours, minutes] = timeValue.split(':').map(Number);
+    
+    let selectedDateTime: Date;
+    
+    if (dateType === 'today') {
+      selectedDateTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes);
+      
+      // Validate: must be at least 10 minutes from now
+      const minDateTime = new Date(now.getTime() + 10 * 60 * 1000);
+      
+      if (selectedDateTime < minDateTime) {
+        // Time is too soon, reset to Segera
+        setPickupTime(null);
+        setSelectedDate(null);
+        setSelectedTime('');
+        return;
+      }
+    } else {
+      // Tomorrow - no time restriction (any time is valid)
+      selectedDateTime = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, hours, minutes);
+    }
+
+    // Convert to Unix timestamp (seconds)
+    const timestamp = Math.floor(selectedDateTime.getTime() / 1000);
+    setPickupTime(timestamp.toString());
   };
 
   // Determine border colors based on selection state
@@ -335,57 +414,94 @@ export function BookingPanel({ onSubmit, isSubmitting, getCurrentLocation, isGet
               </div>
             </div>
           ) : (
-            // Edit mode: show datetime input with clear button
-            <div className="relative">
-              <input
-                ref={timeInputRef}
-                type="datetime-local"
-                id="pickupTime"
-                value={pickupTime || ''}
-                onChange={(e) => {
-                  const newValue = e.target.value || null;
-                  // Validate minimum time (10 minutes from now)
-                  if (newValue) {
-                    const minTime = getMinPickupTime();
-                    if (newValue < minTime) {
-                      alert('Pickup time must be at least 10 minutes from now');
-                      return;
-                    }
-                  }
-                  setPickupTime(newValue);
-                }}
-                min={getMinPickupTime()}
-                className="w-full px-4 py-3 text-sm border-2 border-primary rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all text-gray-700 dark:text-white bg-white dark:bg-gray-800 pr-12"
-              />
-              <button
-                type="button"
-                onClick={() => {
-                  setPickupTime(null);
-                  setShowTimeInput(false);
-                }}
-                className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-red-500 transition-colors"
-                title="Clear pickup time (set to Segera)"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
+            // Edit mode: show date selection and time picker
+            <div className="space-y-3">
+              {/* Date Selection */}
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => handleTimeChange('today', selectedTime)}
+                  className={`py-3 px-4 rounded-xl font-semibold transition-all border-2 ${
+                    selectedDate === 'today'
+                      ? 'border-primary bg-primary/10 text-primary'
+                      : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:border-primary'
+                  }`}
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </button>
+                  📅 Hari Ini
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleTimeChange('tomorrow', selectedTime)}
+                  className={`py-3 px-4 rounded-xl font-semibold transition-all border-2 ${
+                    selectedDate === 'tomorrow'
+                      ? 'border-primary bg-primary/10 text-primary'
+                      : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:border-primary'
+                  }`}
+                >
+                  📅 Besok
+                </button>
+              </div>
+
+              {/* Time Picker */}
+              <div className="relative">
+                <input
+                  ref={timeInputRef}
+                  type="time"
+                  id="pickupTime"
+                  value={selectedTime}
+                  onChange={(e) => {
+                    const dateType = selectedDate || 'today';
+                    handleTimeChange(dateType, e.target.value);
+                  }}
+                  min={selectedDate === 'today' ? getMinTimeForToday() : undefined}
+                  className="w-full px-4 py-3 text-sm border-2 border-primary rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all text-gray-700 dark:text-white bg-white dark:bg-gray-800 pr-12"
+                  placeholder="Pilih waktu"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPickupTime(null);
+                    setSelectedDate(null);
+                    setSelectedTime('');
+                    setShowTimeInput(false);
+                  }}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-red-500 transition-colors"
+                  title="Clear pickup time (set to Segera)"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Info text */}
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                {selectedDate === 'today' && (
+                  <span>⏰ Waktu harus minimal 10 menit dari sekarang</span>
+                )}
+                {selectedDate === 'tomorrow' && (
+                  <span>📆 Besok - boleh pilih waktu kapan saja</span>
+                )}
+                {!selectedDate && (
+                  <span>👆 Pilih Hari Ini atau Besok, lalu tentukan waktunya</span>
+                )}
+              </p>
             </div>
           )}
 
           {!showTimeInput && (
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
               {pickupTime ? t('booking.pickupTimeEdit') : t('booking.pickupTimeDefault')}
             </p>
           )}
